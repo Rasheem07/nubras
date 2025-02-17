@@ -125,12 +125,12 @@ export default function TailorLogin() {
                 )}
             >
                 {step === 'contact' && (
-                    <div className="grid grid-cols-2">
+                    <div className="grid grid-cols-2 p-4 gap-2">
                         <button
                             onClick={() => setUserType('admin')}
 
                             className={clsx(
-                                'w-full py-2 px-4 rounded-tl-xl text-white transition-all',
+                                'w-full py-2 px-4 rounded-md text-white transition-all',
                                 userType === 'admin' ? 'bg-blue-600' : 'bg-gray-700 hover:bg-gray-600'
                             )}
                         >
@@ -139,7 +139,7 @@ export default function TailorLogin() {
                         <button
                             onClick={() => setUserType('tailor')}
                             className={clsx(
-                                'w-full py-2 px-4 rounded-tr-xl text-white transition-all',
+                                'w-full py-2 px-4 rounded-md text-white transition-all',
                                 userType === 'tailor' ? 'bg-blue-600' : 'bg-gray-700 hover:bg-gray-600'
                             )}
                         >

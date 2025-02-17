@@ -72,13 +72,8 @@ const createOrderSchema = z.object({
   const { order, transactions, fabrics, measurements } = data;
   if (transactions && transactions.length > 0) {
     const totalPaid = transactions.reduce((sum, t) => sum + t.amount, 0);
-    if (totalPaid !== order.PaidAmount) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["transactions"],
-        message: `Total transaction amount (${totalPaid}) must match PaidAmount (${order.PaidAmount}).`,
-      });
-    }
+    
+   
   }
   if (order.type === "CUSTOM_TAILORED") {
     if (fabrics && fabrics.length > 0) {

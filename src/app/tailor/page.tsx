@@ -1,10 +1,14 @@
 'use client'
 import React, { useState } from 'react';
-import { 
-  Scissors, Calendar, Package, CheckCircle, DollarSign, 
+import {
+  Scissors, Calendar, Package, CheckCircle, DollarSign,
+  CheckSquare,
   Ruler, X, CreditCard, Clock, FilePlus, Search, Menu,
-  ChevronUp
+  ChevronUp,
+  LayoutDashboard,
+  Loader2
 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 // Keeping your existing interfaces
 interface Measurements {
@@ -59,56 +63,11 @@ interface Payment {
 
 const TailorDashboard = () => {
   const [activeTab, setActiveTab] = useState('orders');
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  
+
   // Your existing state data
-  const [orders] = useState([
-    {
-      id: 1,
-      customer: "John Doe",
-      phone: "+1 234-567-8900",
-      garment: "Three-Piece Suit",
-      measurements: {
-        chest: 40,
-        waist: 34,
-        shoulder: 18,
-        sleeve: 25,
-        inseam: 32,
-        neck: 16
-      },
-      details: "Peak lapels, double-breasted vest, pleated trousers",
-      fabricType: "Wool Blend",
-      fabricColor: "Navy Blue",
-      deadline: "2025-02-20",
-      status: "In Progress",
-      price: 899.99,
-      depositPaid: 300,
-      fittingDate: "2025-02-18"
-    },
-    {
-      id: 2,
-      customer: "Jane Smith",
-      phone: "+1 234-567-8901",
-      garment: "Evening Gown",
-      measurements: {
-        bust: 36,
-        waist: 28,
-        hip: 38,
-        length: 60,
-        shoulder: 15,
-        armhole: 16
-      },
-      details: "Mermaid style, sweetheart neckline, beaded bodice",
-      fabricType: "Silk Satin",
-      fabricColor: "Burgundy",
-      deadline: "2025-02-25",
-      status: "Fitting Scheduled",
-      price: 599.99,
-      depositPaid: 200,
-      fittingDate: "2025-02-19"
-    }
-  ]);
+
 
   const [fittings] = useState<Fitting[]>([
     {
@@ -157,13 +116,39 @@ const TailorDashboard = () => {
   const navItems = [
     { id: 'orders', icon: Package, label: 'Orders' },
     { id: 'measurements', icon: Ruler, label: 'Measurements' },
-    { id: 'fittings', icon: Calendar, label: 'Fittings' },
+    { id: 'tasks', icon: Calendar, label: 'Tasks' },
+    { id: 'analytics', icon: LayoutDashboard, label: 'analytics' },
     { id: 'payments', icon: CreditCard, label: 'Payments' },
   ];
+
+  const [tasks, settasks] = useState([])
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+
+  const { data: orders, isLoading } = useQuery({
+    queryKey: ['tailorOrders'],
+    queryFn: async () => {
+      const response = await fetch('http://localhost:3000/tailor/orders', {
+        credentials: 'include'
+      })
+      return await response.json()
+    }
+  })
+  const { data: orderDetails, isLoading: isOrderDetailsLoading } = useQuery({
+    queryKey: ['orderDetails'],
+    queryFn: async () => {
+      const response = await fetch('http://localhost:3000/tailor/order/43543543', {
+        credentials: 'include'
+      })
+      return await response.json()
+    }
+  })
+
+
+
+
 
   return (
     <div className="min-h-screen bg-gray-900">
@@ -181,13 +166,11 @@ const TailorDashboard = () => {
       </nav>
 
       {/* Mobile Bottom Sheet Navigation */}
-      <div className={`fixed inset-0 bg-black bg-opacity-50 z-30 transition-opacity duration-300 ${
-        isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-      }`} onClick={toggleSidebar}>
-        <div 
-          className={`fixed bottom-0 left-0 right-0 bg-gray-800 rounded-t-2xl transform transition-transform duration-300 ${
-            isSidebarOpen ? 'translate-y-0' : 'translate-y-full'
-          }`}
+      <div className={`fixed inset-0 bg-black bg-opacity-50 z-30 transition-opacity duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`} onClick={toggleSidebar}>
+        <div
+          className={`fixed bottom-0 left-0 right-0 bg-gray-800 rounded-t-2xl transform transition-transform duration-300 ${isSidebarOpen ? 'translate-y-0' : 'translate-y-full'
+            }`}
           onClick={e => e.stopPropagation()}
         >
           <div className="p-4">
@@ -202,11 +185,10 @@ const TailorDashboard = () => {
                     setActiveTab(item.id);
                     setIsSidebarOpen(false);
                   }}
-                  className={`w-full flex items-center p-3 rounded-lg ${
-                    activeTab === item.id 
-                      ? 'bg-indigo-600 text-white' 
+                  className={`w-full flex items-center p-3 rounded-lg ${activeTab === item.id
+                      ? 'bg-indigo-600 text-white'
                       : 'text-gray-400 hover:bg-gray-700'
-                  }`}
+                    }`}
                 >
                   <item.icon className="h-5 w-5 mr-3" />
                   <span className="font-medium">{item.label}</span>
@@ -220,89 +202,128 @@ const TailorDashboard = () => {
       {/* Main Content */}
       <main className="pt-16 px-4 pb-20">
         {/* Stats Cards - Now in a scrollable row */}
-        <div className="overflow-x-auto py-4 -mx-4 px-4">
-          <div className="flex space-x-4 w-max min-w-full">
-            <div className="bg-gray-800 p-4 rounded-lg border border-gray-700 w-60">
-              <div className="flex items-center">
-                <Package className="h-6 w-6 text-indigo-400" />
-                <div className="ml-3">
-                  <p className="text-sm text-gray-400">Active Orders</p>
-                  <p className="text-xl font-semibold text-white">{orders.length}</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-gray-800 p-4 rounded-lg border border-gray-700 w-60">
-              <div className="flex items-center">
-                <Calendar className="h-6 w-6 text-indigo-400" />
-                <div className="ml-3">
-                  <p className="text-sm text-gray-400">Today's Fittings</p>
-                  <p className="text-xl font-semibold text-white">3</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-gray-800 p-4 rounded-lg border border-gray-700 w-60">
-              <div className="flex items-center">
-                <DollarSign className="h-6 w-6 text-yellow-400" />
-                <div className="ml-3">
-                  <p className="text-sm text-gray-400">Pending Payments</p>
-                  <p className="text-xl font-semibold text-white">$1,299</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Content Area */}
         <div className="mt-6">
-          {activeTab === 'orders' && (
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-white">Active Orders</h2>
-                <button className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm">
-                  New Order
-                </button>
+          {isLoading ? (
+            <div className="flex justify-center items-center h-full">
+              <Loader2 className='animate-spin' />
+            </div>
+          ) : (
+            activeTab === 'orders' && (
+              <div className="space-y-4 max-h-[calc(100vh-64px)] overflow-y-auto pb-12">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-lg font-semibold text-white">Active Orders</h2>
+                </div>
+                <div className="space-y-4">
+                  {orders?.map((order: any) => (
+                    <div
+                      key={order.InvoiceId}
+                      className="bg-gray-800 rounded-lg p-4 border border-gray-700"
+                      onClick={() => setSelectedOrder(order)}
+                    >
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h3 className="text-white font-medium">{order.Customer.name}</h3>
+                          <p className="text-gray-400 text-sm">{order.Customer.phone}</p>
+                        </div>
+                        <span
+                          className={`px-2 py-1 text-xs font-semibold rounded-full ${order.status === 'Completed'
+                              ? 'bg-green-900 text-green-300'
+                              : 'bg-yellow-900 text-yellow-300'
+                            }`}
+                        >
+                          {order.status}
+                        </span>
+                      </div>
+                      <div className="mb-3">
+                        <p className="text-white text-sm">{order.productName}</p>
+                        {order.Fabric &&
+                        (
+
+                          <div className="text-gray-400 text-sm pt-4">
+                          {order.Fabric.length > 0 && order.Fabric.map((fabric: any) => (
+                            <span key={fabric.fabricName} className='bg-blue-600 rounded-full text-white px-3 py-1 text-sm'> {fabric.fabricName} ({fabric.type}-{fabric.color})</span>
+                            
+                          ))}
+                        </div>
+                        )}
+                      </div>
+                      <div className="flex justify-between items-center text-sm">
+                        <div className="text-gray-400">
+                          Due: {new Date(order.dueDate).toLocaleDateString()}
+                        </div>
+                        <div className="text-white font-medium">
+                          ${order.PendingAmount}
+                          due
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
               </div>
-              <div className="space-y-4">
-                {orders.map((order) => (
-                  <div 
-                    key={order.id} 
-                    className="bg-gray-800 rounded-lg p-4 border border-gray-700"
-                    onClick={() => setSelectedOrder(order)}
-                  >
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h3 className="text-white font-medium">{order.customer}</h3>
-                        <p className="text-gray-400 text-sm">{order.phone}</p>
-                      </div>
-                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                        order.status === 'Completed'
-                          ? 'bg-green-900 text-green-300'
-                          : 'bg-yellow-900 text-yellow-300'
-                      }`}>
-                        {order.status}
-                      </span>
-                    </div>
-                    <div className="mb-3">
-                      <p className="text-white text-sm">{order.garment}</p>
-                      <p className="text-gray-400 text-sm">{order.fabricType} - {order.fabricColor}</p>
-                    </div>
-                    <div className="flex justify-between items-center text-sm">
-                      <div className="text-gray-400">
-                        Fitting: {order.fittingDate}
-                      </div>
-                      <div className="text-white font-medium">
-                        ${order.price - order.depositPaid} due
-                      </div>
-                    </div>
+            )
+          )}
+
+
+
+          {activeTab === 'analytics' && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
+              <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-400">Active Orders</p>
+                    <p className="text-2xl font-semibold text-white">{orders.length}</p>
                   </div>
-                ))}
+                  <Package className="h-8 w-8 text-indigo-400" />
+                </div>
+                <div className="mt-4">
+                  <div className="h-2 bg-gray-700 rounded-full">
+                    <div className="h-2 bg-indigo-500 rounded-full" style={{ width: '70%' }} />
+                  </div>
+                  <p className="text-sm text-gray-400 mt-2">70% completed this week</p>
+                </div>
+              </div>
+
+              <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-400">Pending Tasks</p>
+                    <p className="text-2xl font-semibold text-white">{tasks.length}</p>
+                  </div>
+                  <CheckSquare className="h-8 w-8 text-green-400" />
+                </div>
+                <div className="mt-4">
+                  <div className="h-2 bg-gray-700 rounded-full">
+                    <div className="h-2 bg-green-500 rounded-full" style={{ width: '45%' }} />
+                  </div>
+                  <p className="text-sm text-gray-400 mt-2">45% tasks completed</p>
+                </div>
+              </div>
+
+              <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-400">Revenue</p>
+                    <p className="text-2xl font-semibold text-white">$2,450</p>
+                  </div>
+                  <DollarSign className="h-8 w-8 text-yellow-400" />
+                </div>
+                <div className="mt-4">
+                  <div className="h-2 bg-gray-700 rounded-full">
+                    <div className="h-2 bg-yellow-500 rounded-full" style={{ width: '85%' }} />
+                  </div>
+                  <p className="text-sm text-gray-400 mt-2">85% of monthly goal</p>
+                </div>
               </div>
             </div>
+
           )}
 
           {/* Similar card-based layouts for other tabs */}
           {activeTab === 'measurements' && (
-            <div className="space-y-4">
+            <div className="space-y-4 max-h-[calc(100vh-64px)] overflow-y-auto pb-12">
               <div className="flex justify-between items-center">
                 <h2 className="text-lg font-semibold text-white">Measurements</h2>
                 <button className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm">
@@ -318,7 +339,7 @@ const TailorDashboard = () => {
                 />
               </div>
               <div className="space-y-4">
-                {orders.map((order) => (
+                {/* {orders.map((order) => (
                   <div key={order.id} className="bg-gray-800 rounded-lg p-4 border border-gray-700">
                     <div className="mb-3">
                       <h3 className="text-white font-medium">{order.customer}</h3>
@@ -336,13 +357,13 @@ const TailorDashboard = () => {
                       View All Measurements
                     </button>
                   </div>
-                ))}
+                ))} */}
               </div>
             </div>
           )}
 
-          {activeTab === 'fittings' && (
-            <div className="space-y-4">
+          {activeTab === 'tasks' && (
+            <div className="space-y-4 max-h-[calc(100vh-64px)] overflow-y-auto">
               <div className="flex justify-between items-center">
                 <h2 className="text-lg font-semibold text-white">Today's Fittings</h2>
                 <button className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm">
@@ -360,11 +381,10 @@ const TailorDashboard = () => {
                           <p className="text-gray-400 text-sm">{fitting.date}</p>
                         </div>
                       </div>
-                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                        fitting.status === 'Scheduled' 
+                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${fitting.status === 'Scheduled'
                           ? 'bg-yellow-900 text-yellow-300'
                           : 'bg-green-900 text-green-300'
-                      }`}>
+                        }`}>
                         {fitting.status}
                       </span>
                     </div>
@@ -412,11 +432,10 @@ const TailorDashboard = () => {
                         <h3 className="text-white font-medium">{payment.customer}</h3>
                         <p className="text-gray-400 text-sm">Order #{payment.orderId}</p>
                       </div>
-                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                        payment.status === 'Completed'
+                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${payment.status === 'Completed'
                           ? 'bg-green-900 text-green-300'
                           : 'bg-yellow-900 text-yellow-300'
-                      }`}>
+                        }`}>
                         {payment.status}
                       </span>
                     </div>
@@ -425,11 +444,10 @@ const TailorDashboard = () => {
                       <span className="text-white font-medium">${payment.amount}</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        payment.type === 'Deposit' 
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${payment.type === 'Deposit'
                           ? 'bg-blue-900 text-blue-300'
                           : 'bg-purple-900 text-purple-300'
-                      }`}>
+                        }`}>
                         {payment.type}
                       </span>
                       <span className="text-gray-400">{payment.method}</span>
@@ -442,9 +460,13 @@ const TailorDashboard = () => {
         </div>
       </main>
 
-      {/* Order Details Modal */}
-      {selectedOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-40">
+      {isLoading ? (
+        <div className="flex justify-center items-center h-full">
+          <Loader2 className='animate-spin' /> {/* Replace with your loading spinner component */}
+        </div>
+      ) : (
+        selectedOrder && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-40">
           <div className="fixed bottom-0 left-0 right-0 bg-gray-800 rounded-t-2xl max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-gray-800 p-4 border-b border-gray-700">
               <div className="flex justify-between items-center">
@@ -454,55 +476,96 @@ const TailorDashboard = () => {
                 </button>
               </div>
             </div>
-            <div className="p-4 space-y-4">
-              <div>
+            <div className="p-6 space-y-6">
+              {/* Customer Section */}
+              <div className="bg-gray-700 p-4 rounded-lg shadow-md">
                 <h4 className="text-sm font-medium text-gray-400 mb-2">Customer</h4>
-                <p className="text-white">{selectedOrder.customer}</p>
-                <p className="text-gray-400">{selectedOrder.phone}</p>
+                <p className="text-white text-lg">{orderDetails.Customer.name}</p>
+                <p className="text-gray-400">{orderDetails.Customer.phone}</p>
               </div>
-              <div>
+        
+              {/* Garment Section */}
+              <div className="bg-gray-700 p-4 rounded-lg shadow-md">
                 <h4 className="text-sm font-medium text-gray-400 mb-2">Garment</h4>
-                <p className="text-white">{selectedOrder.garment}</p>
-                <p className="text-gray-400">{selectedOrder.fabricType} - {selectedOrder.fabricColor}</p>
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-gray-400 mb-2">Measurements</h4>
-                <div className="grid grid-cols-2 gap-3">
-                  {Object.entries(selectedOrder.measurements).map(([key, value]) => (
-                    <div key={key} className="bg-gray-700 p-3 rounded-lg">
-                      <p className="text-gray-400 text-sm capitalize">{key}</p>
-                      <p className="text-white font-medium">{value}"</p>
+                <p className="text-white text-lg">{orderDetails.productName}</p>
+                <div className="space-y-2">
+                  {orderDetails.Fabric.map((fabric: any, index: any) => (
+                    <div key={index} className="flex items-center">
+                      <p className="text-gray-400 text-sm">
+                        Fabric {index + 1}:
+                      </p>
+                      <p className="text-white">{fabric.fabricName}({fabric.type}-{fabric.color})</p>
                     </div>
                   ))}
                 </div>
               </div>
-              <div>
+        
+              {/* Measurements Section */}
+              <div className="bg-gray-700 p-4 rounded-lg shadow-md">
+                <h4 className="text-sm font-medium text-gray-400 mb-2">Measurements</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {orderDetails.Measurement?.map((measurement: any) => (
+                    <div key={measurement.id} className="bg-gray-600 border p-4 rounded-lg">
+                      <h5 className="text-sm font-medium text-gray-300">Measurement Details</h5>
+                      {[
+                        ['LengthInFront', measurement.LengthInFront],
+                        ['LengthBehind', measurement.lengthBehind],
+                        ['Shoulder', measurement.shoulder],
+                        ['Hands', measurement.hands],
+                        ['Neck', measurement.neck],
+                        ['Middle', measurement.middle],
+                        ['Chest', measurement.chest],
+                        ['EndOfShow', measurement.endOfShow]
+                      ].map(([key, value]) => (
+                        <div key={key} className="flex justify-between">
+                          <p className="text-gray-400 text-sm capitalize">{key}</p>
+                          <p className="text-white font-medium">{value}"</p>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+        
+              {/* Order Details Section */}
+              <div className="bg-gray-700 p-4 rounded-lg shadow-md">
                 <h4 className="text-sm font-medium text-gray-400 mb-2">Details</h4>
-                <p className="text-white">{selectedOrder.details}</p>
+                <p className="text-white">{orderDetails.details}</p>
               </div>
-              <div className="grid grid-cols-3 gap-3">
-                <div className="bg-gray-700 p-3 rounded-lg">
+        
+              {/* Price and Balance Section */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-gray-700 p-4 rounded-lg shadow-md">
                   <p className="text-gray-400 text-sm">Total Price</p>
-                  <p className="text-white font-medium">${selectedOrder.price}</p>
+                  <p className="text-white text-lg font-semibold">${orderDetails.price}</p>
                 </div>
-                <div className="bg-gray-700 p-3 rounded-lg">
+                <div className="bg-gray-700 p-4 rounded-lg shadow-md">
                   <p className="text-gray-400 text-sm">Deposit</p>
-                  <p className="text-white font-medium">${selectedOrder.depositPaid}</p>
+                  <p className="text-white text-lg font-semibold">${orderDetails.Transactions[0].amount}</p>
                 </div>
-                <div className="bg-gray-700 p-3 rounded-lg">
+                <div className="bg-gray-700 p-4 rounded-lg shadow-md">
                   <p className="text-gray-400 text-sm">Balance</p>
-                  <p className="text-white font-medium">${selectedOrder.price - selectedOrder.depositPaid}</p>
+                  <p className="text-white text-lg font-semibold">
+                    ${orderDetails.price - orderDetails.Transactions[0].amount}
+                  </p>
                 </div>
               </div>
-              {selectedOrder.status !== 'Completed' && (
-                <button className="w-full bg-green-600 text-white py-3 rounded-lg mt-4">
+        
+              {/* Mark as Completed Button */}
+              {orderDetails.status !== 'Completed' && (
+                <button className="w-full bg-green-600 text-white py-3 rounded-lg mt-6 shadow-md hover:bg-green-700 transition">
                   Mark as Completed
                 </button>
               )}
             </div>
           </div>
         </div>
+        
+
+        )
       )}
+
+
     </div>
   );
 };
