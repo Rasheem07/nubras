@@ -26,7 +26,6 @@ interface OrderInvoicePDFProps {
 const styles = StyleSheet.create({
   page: {
     padding: 30,
-    fontFamily: 'Helvetica',
   },
   header: {
     fontSize: 20,

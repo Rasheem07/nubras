@@ -144,7 +144,7 @@ const getStatusStyle = (status: string) => {
 
 const OrderPDF = ({ order }: OrderInvoicePDFProps) => (
   <Document>
-    <Page size="A4" style={styles.page}>
+    <Page size="A4" style={styles.page} >
       <View style={styles.header}>
         <Text style={styles.title}>Invoice</Text>
 

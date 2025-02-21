@@ -41,7 +41,7 @@ const OrderDetailsPage = () => {
 
 
     const getOrderById = async (InvoiceId: string) => {
-        const response = await fetch(`http://localhost:3000/orders/${InvoiceId}`);
+        const response = await fetch(`http://34.18.99.10/orders/${InvoiceId}`);
         return response.json();
     }
 

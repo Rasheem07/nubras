@@ -31,7 +31,7 @@ export default function ServicesPage() {
   const {data: services, isLoading} = useQuery<Service[]>({
     queryKey: [section as string],
     queryFn: async () => {
-       const response = await fetch(`http://localhost:3000/service/${section}`, {
+       const response = await fetch(`http://34.18.99.10/service/${section}`, {
          headers: {
             "Content-Type": "application/json"
          },
@@ -66,7 +66,7 @@ export default function ServicesPage() {
 
   const {mutate: addNewService} = useMutation({
     mutationFn: async (data: ServiceFormData) => {
-        const response = await fetch('http://localhost:3000/service/add', {
+        const response = await fetch('http://34.18.99.10/service/add', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

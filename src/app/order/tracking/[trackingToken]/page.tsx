@@ -10,13 +10,11 @@ import { OrderData } from "@/types";
 import OrderDetailsPage from "../../_components/orderDetailsPage";
 
 
-
-
 export default function TrackingPage() {
   const { trackingToken } = useParams();
 
   const getOrder = async () => {
-    const response = await fetch(`http://localhost:3000/order/${trackingToken}`, { credentials: 'include' })
+    const response = await fetch(`http://34.18.99.10/order/${trackingToken}`, { credentials: 'include' })
     return response.json()
   }
 

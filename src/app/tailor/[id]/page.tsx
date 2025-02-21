@@ -8,7 +8,7 @@ export default function TailorOrder() {
     const { id } = useParams();
 
     const getOrderDetails = async () => {
-        const response = await fetch(`http://localhost:3000/tailor/order/${id}`, {
+        const response = await fetch(`http://34.18.99.10/tailor/order/${id}`, {
             credentials: 'include'
         })
         return response.json()

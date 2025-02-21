@@ -27,7 +27,7 @@ export default function ConfigurationPage() {
 
   const fetchConfigs = async () => {
     try {
-      const response = await fetch('http://localhost:3000/config', {credentials: 'include'});
+      const response = await fetch('http://34.18.99.10/config', {credentials: 'include'});
       const data: ConfigValue[] = await response.json();
       
       const configMap = data.reduce((acc, config) => ({
@@ -57,7 +57,7 @@ export default function ConfigurationPage() {
     setSaving(true);
     try {
       const promises = Object.entries(configs).map(([key, value]) => 
-        fetch('http://localhost:3000/config', {
+        fetch('http://34.18.99.10/config', {
           method: 'POST',
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
@@ -184,7 +184,7 @@ export default function ConfigurationPage() {
                 title="Security Settings"
                 fields={[
                     { key: 'JWT_SECRET', label: 'JWT Secret Key', type: 'password', placeholder: 'Enter JWT secret' },
-                    { key: 'CORS_ORIGINS', label: 'CORS Allowed Origins', type: 'text', placeholder: 'https://example.com, http://localhost:3000' },
+                    { key: 'CORS_ORIGINS', label: 'CORS Allowed Origins', type: 'text', placeholder: 'https://example.com, http://34.18.99.10' },
                     { key: 'SESSION_TIMEOUT', label: 'Session Timeout (minutes)', type: 'text', placeholder: '60' }
                 ]}
             />

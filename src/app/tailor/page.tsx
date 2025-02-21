@@ -130,7 +130,7 @@ const TailorDashboard = () => {
   const { data: orders, isLoading } = useQuery({
     queryKey: ['tailorOrders'],
     queryFn: async () => {
-      const response = await fetch('http://localhost:3000/tailor/orders', {
+      const response = await fetch('http://34.18.99.10/tailor/orders', {
         credentials: 'include'
       })
       return await response.json()
@@ -139,7 +139,7 @@ const TailorDashboard = () => {
   const { data: orderDetails, isLoading: isOrderDetailsLoading } = useQuery({
     queryKey: ['orderDetails'],
     queryFn: async () => {
-      const response = await fetch('http://localhost:3000/tailor/order/43543543', {
+      const response = await fetch(`http://34.18.99.10/tailor/order/43543543`, {
         credentials: 'include'
       })
       return await response.json()

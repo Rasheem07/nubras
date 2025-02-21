@@ -15,7 +15,7 @@
 
 
   const fetchOrders = async (): Promise<Order[]> => {
-    const response = await fetch('http://localhost:3000/orders', {
+    const response = await fetch('http://34.18.99.10/orders', {
       credentials: 'include'
     });
     if (!response.ok) {
@@ -44,10 +44,11 @@
 
     const getOrderStage = (status: string) => {
       switch(status) {
-        case 'Pending': return 1;
-        case 'Processing': return 2;
-        case 'Shipped': return 3;
-        case 'Completed': return 4;
+        case 'confirmed': return 1;
+        case 'processing': return 2;
+        case 'tailoring': return 3;
+        case 'ready': return 4;
+        case 'delivered': return 5;
         default: return 0;
       }
     };
@@ -114,11 +115,12 @@
     };
 
     const stages = [ 
-      'Pending',
-      'Processing',
-      'Shipped',
-      'Delivered',
-      'Cancelled'
+      'confirmed',
+      'processing',
+      'tailoring',
+      'ready',
+      'delivered',
+      'cancelled'
     ];
 
     const getNextStage = (currentStage: string) => {
@@ -131,7 +133,7 @@
 
     const handleCancelOrder = async () => {
       if (!selectedOrder) return;
-      const response = await fetch(`http://localhost:3000/orders/cancel/${selectedOrder.InvoiceId}`, {
+      const response = await fetch(`http://34.18.99.10/orders/cancel/${selectedOrder.InvoiceId}`, {
         method: 'DELETE',
         credentials: 'include'
       }); 
@@ -156,7 +158,7 @@
 
     const handleUpdateOrderStatus = async () => {
       const status = getNextStage(selectedOrder?.status || '').toUpperCase();
-      const response = await fetch(`http://localhost:3000/orders/update/${selectedOrder?.InvoiceId}`, {
+      const response = await fetch(`http://34.18.99.10/orders/update/${selectedOrder?.InvoiceId}`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
@@ -178,7 +180,7 @@
     });
 
     const handleDeleteOrder = async () => {
-      const response = await fetch(`http://localhost:3000/orders/delete/${selectedOrder?.InvoiceId}`, {
+      const response = await fetch(`http://34.18.99.10/orders/delete/${selectedOrder?.InvoiceId}`, {
         method: 'DELETE',
         credentials: 'include'
       });

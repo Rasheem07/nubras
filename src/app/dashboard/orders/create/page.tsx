@@ -282,7 +282,7 @@ const OrderCreationForm: React.FC = () => {
 
   const orderMutation = useMutation({
     mutationFn: async (data: CreateOrderFormData) => {
-      const response = await fetch('http://localhost:3000/orders/create', {
+      const response = await fetch('http://34.18.99.10/orders/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -303,7 +303,7 @@ const OrderCreationForm: React.FC = () => {
   const { data: options, isLoading } = useQuery({
     queryKey: ['options'],
     queryFn: async () => {
-      const response = await fetch('http://localhost:3000/orders/values/distinct', {
+      const response = await fetch('http://34.18.99.10/orders/values/distinct', {
         credentials: 'include',
         headers: {
           "Content-Type": 'application/json'

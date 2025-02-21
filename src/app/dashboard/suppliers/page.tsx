@@ -11,7 +11,7 @@ export default function SupplierPage() {
     const {data: suppliers, isLoading} = useQuery({
         queryKey: ['suppliers'],
         queryFn: async () => {
-            const response = await fetch('http://localhost:3000/inventory/suppliers', {
+            const response = await fetch('http://34.18.99.10/inventory/suppliers', {
                 credentials: 'include'
             })
             const json = await response.json()
