@@ -12,7 +12,7 @@ export default function InventoryPage() {
     const { id } = useParams();
 
     const getProductMovement = async () => {
-        const response = await fetch(`http://34.18.99.10/inventory/fabrics/${id}`, {
+        const response = await fetch(`https://34.18.99.10/inventory/fabrics/${id}`, {
             headers: {
                 "Content-Type": "application/json"
             },

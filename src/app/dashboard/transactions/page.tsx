@@ -36,7 +36,7 @@ export default function TransactionsPage() {
 
     const queryClient = useQueryClient()
     const onSubmit = async (data: TransactionFormData) => {
-        const response = await fetch('http://34.18.99.10/transactions/create', {
+        const response = await fetch('https://34.18.99.10/transactions/create', {
             method: 'POST',     
             headers: {
                 'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ export default function TransactionsPage() {
     const { data: transactions, isLoading } = useQuery({
         queryKey: ['transactions'],
         queryFn: async () => {
-            const response = await fetch('http://34.18.99.10/transactions', {
+            const response = await fetch('https://34.18.99.10/transactions', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

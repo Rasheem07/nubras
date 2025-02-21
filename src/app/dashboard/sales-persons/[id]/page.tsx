@@ -42,7 +42,7 @@ export default function CustomerInvoicesPage() {
     });
 
     const getSalesPersonInvoices = async (id: string) => {
-        const response = await fetch(`http://34.18.99.10/orders/sales-person/${id}`);
+        const response = await fetch(`https://34.18.99.10/orders/sales-person/${id}`);
         return response.json();
     }
 

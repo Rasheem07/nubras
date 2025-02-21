@@ -11,7 +11,7 @@ import DataTable from '../_components/DataTable.';
 import { toast } from 'sonner';
 
 const createEmployee = async (data: EmployeeFormData) => {
-  const response = await fetch('http://34.18.99.10/admin/add-employee', {
+  const response = await fetch('https://34.18.99.10/admin/add-employee', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ export default function EmployeeForm() {
   const { data: tailors, isLoading } = useQuery({
     queryKey: ['tailors'],
     queryFn: async () => {
-      const response = await fetch('http://34.18.99.10/tailor', {
+      const response = await fetch('https://34.18.99.10/tailor', {
         headers: {
           "Content-Type": "application/json"
         },

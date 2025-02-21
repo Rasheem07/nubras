@@ -21,7 +21,7 @@ interface Customer {
 }
 
 const fetchCustomers = async (): Promise<Customer[]> => {
-    const response = await fetch('http://34.18.99.10/customers', {
+    const response = await fetch('https://34.18.99.10/customers', {
         credentials: 'include'
     });
     if (!response.ok) {
@@ -31,7 +31,7 @@ const fetchCustomers = async (): Promise<Customer[]> => {
 };
 
 const createCustomer = async (customerData: { name: string; phone: string; location: string }): Promise<Customer> => {
-    const response = await fetch('http://34.18.99.10/customers/create', {
+    const response = await fetch('https://34.18.99.10/customers/create', {
         method: 'POST',
         credentials: 'include',
         headers: {

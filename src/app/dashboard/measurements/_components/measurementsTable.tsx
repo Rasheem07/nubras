@@ -25,7 +25,7 @@ const MeasurementTable: React.FC = () => {
     // Fetch measurements data from the API
     const fetchMeasurements = async () => {
         try {
-            const response = await fetch('http://34.18.99.10/measurement');
+            const response = await fetch('https://34.18.99.10/measurement');
             const data = await response.json();
            
             return data;

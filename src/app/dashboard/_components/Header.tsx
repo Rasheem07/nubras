@@ -36,7 +36,7 @@ export default function Header() {
     }
 
     const handleLogout = async () => {
-        await fetch('http://34.18.99.10/auth/logout', {
+        await fetch('https://34.18.99.10/auth/logout', {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"
