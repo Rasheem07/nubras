@@ -11,7 +11,7 @@ export default function SalesPersonsPage() {
     const queryClient = useQueryClient();
     
     const createSalesPerson = async (data: any) => {
-        const response = await fetch("https://34.18.99.10/salesperson/create", {
+        const response = await fetch("http://34.18.73.81/salesperson/create", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -36,7 +36,7 @@ export default function SalesPersonsPage() {
 
     const { data: salespersons, isLoading, error } = useQuery({
         queryKey: ['salespersons'],
-        queryFn: () => fetch('https://34.18.99.10/salesperson', {credentials: 'include'}).then(res => res.json())
+        queryFn: () => fetch('http://34.18.73.81/salesperson', {credentials: 'include'}).then(res => res.json())
     });
 
 

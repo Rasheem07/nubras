@@ -27,7 +27,7 @@ const MeasurementForm = () => {
 
   const {mutate: createMeasurement} = useMutation({
     mutationFn: async (data: any) => {
-      const response = await fetch('https://34.18.99.10/measurement/create', {
+      const response = await fetch('http://34.18.73.81/measurement/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

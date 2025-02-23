@@ -5,7 +5,7 @@ export function usePermission(role: string) {
 
     useEffect(() => {
         async function fetchPermissions() {
-            const res = await fetch("https://34.18.99.10/role", {
+            const res = await fetch("http://34.18.73.81/role", {
                 credentials: 'include'
             });
             const data = await res.json();

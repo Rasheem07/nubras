@@ -14,7 +14,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         const fetchUserType = async () => {
-            const response = await fetch(`https://34.18.99.10/role/user-type`, {
+            const response = await fetch(`http://34.18.73.81/role/user-type`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
