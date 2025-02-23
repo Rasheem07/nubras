@@ -35,7 +35,7 @@ export default function TailorLogin() {
 
     const sendOtpMutation = useMutation({
         mutationFn: async () => {
-            const response = await fetch(`http://34.18.73.81${apiPrefix}/login`, {
+            const response = await fetch(`http://34.18.73.81:3000${apiPrefix}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contact }),
@@ -61,7 +61,7 @@ export default function TailorLogin() {
 
     const verifyOtpMutation = useMutation({
         mutationFn: async () => {
-            const response = await fetch(`http://34.18.73.81${apiPrefix}/verify-otp`, {
+            const response = await fetch(`http://34.18.73.81:3000${apiPrefix}/verify-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -92,7 +92,7 @@ export default function TailorLogin() {
 
     const resendOtpMutation = useMutation({
         mutationFn: async () => {
-            const response = await fetch(`http://34.18.73.81${apiPrefix}/resend-otp`, {
+            const response = await fetch(`http://34.18.73.81:3000${apiPrefix}/resend-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contact }),

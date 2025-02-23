@@ -15,7 +15,7 @@
 
 
   const fetchOrders = async (): Promise<Order[]> => {
-    const response = await fetch('http://34.18.73.81/orders', {
+    const response = await fetch('http://34.18.73.81:3000/orders', {
       credentials: 'include'
     });
     if (!response.ok) {
@@ -133,7 +133,7 @@
 
     const handleCancelOrder = async () => {
       if (!selectedOrder) return;
-      const response = await fetch(`http://34.18.73.81/orders/cancel/${selectedOrder.InvoiceId}`, {
+      const response = await fetch(`http://34.18.73.81:3000/orders/cancel/${selectedOrder.InvoiceId}`, {
         method: 'DELETE',
         credentials: 'include'
       }); 
@@ -158,7 +158,7 @@
 
     const handleUpdateOrderStatus = async () => {
       const status = getNextStage(selectedOrder?.status || '').toUpperCase();
-      const response = await fetch(`http://34.18.73.81/orders/update/${selectedOrder?.InvoiceId}`, {
+      const response = await fetch(`http://34.18.73.81:3000/orders/update/${selectedOrder?.InvoiceId}`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
@@ -180,7 +180,7 @@
     });
 
     const handleDeleteOrder = async () => {
-      const response = await fetch(`http://34.18.73.81/orders/delete/${selectedOrder?.InvoiceId}`, {
+      const response = await fetch(`http://34.18.73.81:3000/orders/delete/${selectedOrder?.InvoiceId}`, {
         method: 'DELETE',
         credentials: 'include'
       });

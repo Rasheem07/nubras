@@ -7,7 +7,7 @@ export default function ReservedFabrics() {
     const {data: reservedFabrics, isLoading} = useQuery({
         queryKey: ['reservedFabrics'],
         queryFn: async () => {
-            const response = await fetch('http://34.18.73.81/inventory/reserved-fabrics', {
+            const response = await fetch('http://34.18.73.81:3000/inventory/reserved-fabrics', {
                 credentials: 'include'
             })
             const json = await response.json()

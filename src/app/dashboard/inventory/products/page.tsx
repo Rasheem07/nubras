@@ -7,7 +7,7 @@ export default function InventoryPage() {
     const { product } = useParams();
 
     const getProductMovement = async () => {
-        const response = await fetch(`http://34.18.73.81/inventory/products`, {
+        const response = await fetch(`http://34.18.73.81:3000/inventory/products`, {
             headers: {
                 "Content-Type": "application/json"
             },

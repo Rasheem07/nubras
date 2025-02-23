@@ -17,7 +17,7 @@ function Callback() {
         }
 
         const checkUserAndRedirect = async () => {
-                const response = await fetch(`http://34.18.73.81/role/user-type`, {
+                const response = await fetch(`http://34.18.73.81:3000/role/user-type`, {
                     headers: {
                         'Content-Type': 'application/json'
                     },

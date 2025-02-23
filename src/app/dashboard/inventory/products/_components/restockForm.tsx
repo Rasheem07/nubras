@@ -33,7 +33,7 @@ const RestockForm: React.FC<RestockFormProps> = ({ setIsRestockModalOpen }) => {
   // Mutation for the API call
   const { mutate, isPending: isLoading } = useMutation({
     mutationFn: async (data: ProductRestockFormData) => {
-      const response = await fetch(`http://34.18.73.81/inventory/restock/product`, {
+      const response = await fetch(`http://34.18.73.81:3000/inventory/restock/product`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -15,7 +15,7 @@ interface Inventory {
 
 export default function InventoryPage() {
     const getInventory = async () => {
-        const response = await fetch('http://34.18.73.81/inventory', {
+        const response = await fetch('http://34.18.73.81:3000/inventory', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'

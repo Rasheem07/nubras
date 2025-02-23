@@ -14,7 +14,7 @@ export default function TrackingPage() {
   const { trackingToken } = useParams();
 
   const getOrder = async () => {
-    const response = await fetch(`http://34.18.73.81/order/${trackingToken}`, { credentials: 'include' })
+    const response = await fetch(`http://34.18.73.81:3000/order/${trackingToken}`, { credentials: 'include' })
     return response.json()
   }
 
