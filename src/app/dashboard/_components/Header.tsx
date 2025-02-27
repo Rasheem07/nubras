@@ -2,9 +2,10 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, Settings, User, LogOut, AppWindow } from 'lucide-react';
+import { Bell, Settings, User, LogOut, AppWindow, Loader2 } from 'lucide-react';
 import { usePermission } from '@/hooks/usePermission';
 import Link from 'next/link';
+import { useMutation } from '@tanstack/react-query';
 
 export default function Header() {
     const pathname = usePathname();
@@ -43,8 +44,12 @@ export default function Header() {
             },
             credentials: 'include'
         })
-        router.replace('/login')
+        router.push('/login')
     }
+
+    const { mutate, isPending } = useMutation({
+        mutationFn: handleLogout
+    })
 
     return (
         <header className="bg-gray-800 text-white px-6 py-4 relative">
@@ -88,11 +93,20 @@ export default function Header() {
                                 </Link>}
                                 <div className="border-t border-gray-200 my-1"></div>
                                 <button
-                                    onClick={handleLogout}
+                                    onClick={() => mutate()}
                                     className="flex items-center space-x-3 px-4 py-2 hover:bg-gray-100 w-full text-red-600 transition-colors duration-200"
                                 >
-                                    <LogOut className="w-4 h-4" />
-                                    <span>Logout</span>
+                                    {isPending ? (
+                                        <>
+                                            <Loader2 className='h-4 w-4 animate-spin' />
+                                            Logging out..
+                                        </>
+                                    ) : (
+                                        <>
+                                            <LogOut className="w-4 h-4" />
+                                            <span>Logout</span>
+                                        </>
+                                    )}
                                 </button>
                             </div>
                         )}

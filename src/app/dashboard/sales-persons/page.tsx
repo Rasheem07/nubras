@@ -9,7 +9,7 @@ export default function SalesPersonsPage() {
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const queryClient = useQueryClient();
-    
+
     const createSalesPerson = async (data: any) => {
         const response = await fetch("http://34.18.73.81:3000/salesperson/create", {
             method: "POST",
@@ -36,7 +36,7 @@ export default function SalesPersonsPage() {
 
     const { data: salespersons, isLoading, error } = useQuery({
         queryKey: ['salespersons'],
-        queryFn: () => fetch('http://34.18.73.81:3000/salesperson', {credentials: 'include'}).then(res => res.json())
+        queryFn: () => fetch('http://34.18.73.81:3000/salesperson', { credentials: 'include' }).then(res => res.json())
     });
 
 
@@ -78,59 +78,58 @@ export default function SalesPersonsPage() {
             </div>
 
             <SalespersonTable salespersons={salespersons} />
-            
+
             {isCreateModalOpen && (
-                 <Modal onClose={() => setIsCreateModalOpen(false)}>
-                 <div className="bg-gray-800 p-8 rounded-xl max-w-4xl min-w-[400px] w-full shadow-2xl">
-                     <h2 className="text-2xl font-bold mb-6 text-green-400">Create New Customer</h2>
-                     <form onSubmit={(e) => {
-                         e.preventDefault();
-                         handleCreateSalesPerson(new FormData(e.currentTarget));
-                     }}>
-                         <div className="space-y-4">
-                             <div>
+                <Modal onClose={() => setIsCreateModalOpen(false)}>
+                    <div className="bg-gray-800 p-8 rounded-xl max-w-4xl min-w-[400px] w-full shadow-2xl">
+                        <h2 className="text-2xl font-bold mb-6 text-green-400">Create New sales person</h2>
+                        <form onSubmit={(e) => {
+                            e.preventDefault();
+                            handleCreateSalesPerson(new FormData(e.currentTarget));
+                        }}>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-400 mb-2">Name</label>
+                                    <input
+                                        name="name"
+                                        type="text"
+                                        placeholder="Enter Sales person name..."
+                                        className="w-full p-3 bg-gray-700 rounded-lg border border-gray-600 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                                        required
+                                    />
+                                </div>
 
-                                 <label className="block text-sm font-medium text-gray-400 mb-2">Name</label>
-                                 <input
-                                     name="name"
-                                     type="text"
-                                     placeholder="Enter Sales person name..."
-                                     className="w-full p-3 bg-gray-700 rounded-lg border border-gray-600 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                                     required
-                                 />
-                             </div>
-                             
-                             
-                             <div className="flex justify-end gap-3 pt-6">
-                                 <button
-                                     type="button"
-                                     onClick={() => setIsCreateModalOpen(false)}
-                                     className="px-6 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-gray-300 transition-colors"
-                                 >
-                                     Cancel
 
-                                 </button>
-                                 <button
-                                     type="submit"
-                                     disabled={createSalesPersonMutation.isPending}
-                                     className="px-6 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                 >
+                                <div className="flex justify-end gap-3 pt-6">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsCreateModalOpen(false)}
+                                        className="px-6 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-gray-300 transition-colors"
+                                    >
+                                        Cancel
 
-                                     {createSalesPersonMutation.isPending ? (
-                                         <div className="flex items-center gap-2">
-                                             <Loader2 className="w-4 h-4 animate-spin" />
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={createSalesPersonMutation.isPending}
+                                        className="px-6 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
 
-                                             Creating...
-                                         </div>
-                                     ) : (
-                                         'Add sales person'
-                                     )}
-                                 </button>
-                             </div>
-                         </div>
-                     </form>
-                 </div>
-             </Modal>
+                                        {createSalesPersonMutation.isPending ? (
+                                            <div className="flex items-center gap-2">
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+
+                                                Creating...
+                                            </div>
+                                        ) : (
+                                            'Add sales person'
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </Modal>
             )}
         </div>
 

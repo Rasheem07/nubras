@@ -196,7 +196,7 @@ export default function CustomersPage() {
                                     <td className="py-2 px-4">{customer.phone || 'N/A'}</td>
                                     <td className="py-2 px-4">{customer.location || 'N/A'}</td>
                                     <td className="py-2 px-4">{customer.totalOrders || 0}</td>
-                                    <td className="py-2 px-4">${(customer.totalSpent || 0).toFixed(2)}</td>
+                                    <td className="py-2 px-4">AED {(customer.totalSpent || 0).toFixed(2)}</td>
                                     <td className="py-2 px-4">
                                         {customer.lastOrder 
                                             ? new Date(customer.lastOrder).toLocaleDateString() 
@@ -208,7 +208,7 @@ export default function CustomersPage() {
                                             onClick={() => setSelectedCustomer(customer)}
                                             className="text-gray-400 hover:text-white transition-colors"
                                         >
-                                            <Link href={`/customers/${customer.id}`} className='text-blue-500 hover:text-blue-600 hover:underline underline-offset-2'>View invoices</Link>
+                                            <Link href={`/dashboard/customers/${customer.id}`} className='text-blue-500 hover:text-blue-600 hover:underline underline-offset-2'>View invoices</Link>
                                         </button>
                                     </td>
                                 </tr>

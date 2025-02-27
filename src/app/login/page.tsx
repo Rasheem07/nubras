@@ -13,6 +13,7 @@ export default function TailorLogin() {
     const [contact, setContact] = useState('');
     const [otp, setOtp] = useState('');
     const [error, setError] = useState('');
+    const [isRedirecting, setIsRedirecting] = useState(false);
     const [resendTimer, setResendTimer] = useState(0);
     const [userType, setUserType] = useState<'admin' | 'tailor'>('admin');
 
@@ -82,6 +83,7 @@ export default function TailorLogin() {
         },
         onSuccess: () => {
             if (userType === 'tailor') {
+                setIsRedirecting(true);
                 router.push('/tailor');
             } else {
                 router.push('/dashboard');
@@ -218,15 +220,16 @@ export default function TailorLogin() {
                             <button
                                 type="submit"
                                 disabled={verifyOtpMutation.isPending}
-                                className="w-full flex justify-center py-2 px-4 rounded-md bg-blue-600 hover:bg-blue-700 text-white transition-all disabled:opacity-50"
+                                className="w-full flex items-center gap-2 justify-center py-2 px-4 rounded-md bg-blue-600 hover:bg-blue-700 text-white transition-all disabled:opacity-50"
                             >
-                                {verifyOtpMutation.isPending ? <Loader2 className="animate-spin" /> : 'Verify OTP'}
+                                {verifyOtpMutation.isPending ? <><Loader2 className="animate-spin" /> Verifying your OTP</> : `Verify OTP`}
+                                {isRedirecting && <> <Loader2 className="animate-spin" /> Redirecting you to dashboard</>}
                             </button>
                             <button
                                 type="button"
                                 disabled={resendTimer > 0 || resendOtpMutation.isPending}
                                 onClick={() => resendOtpMutation.mutate()}
-                                className="w-full flex justify-center py-2 px-4 rounded-md bg-gray-700 hover:bg-gray-600 text-white transition-all disabled:opacity-50"
+                                className="w-full flex  items-center justify-center py-2 px-4 rounded-md bg-gray-700 hover:bg-gray-600 text-white transition-all disabled:opacity-50"
                             >
                                 {resendOtpMutation.isPending ? <Loader2 className="animate-spin" /> : `Resend OTP (${resendTimer}s)`}
                             </button>

@@ -47,7 +47,7 @@ export default function ServicesPage() {
       name: "",
       type: ServiceType.READY_MADE,
       price: 0,
-      sectionName: section
+      sectionName: decodeURIComponent(section)
     },
   });
 

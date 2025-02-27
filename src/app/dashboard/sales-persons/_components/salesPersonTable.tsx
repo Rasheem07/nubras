@@ -106,7 +106,7 @@ const SalespersonTable: React.FC<SalespersonTableProps> = ({ salespersons }) => 
                                 </td>
                                 <td className="py-2 px-4">
                                     <Link
-                                        href={`/sales-persons/${sp.id}`}
+                                        href={`/dashboard/sales-persons/${sp.id}`}
                                         className="text-blue-500 hover:text-blue-600 hover:underline underline-offset-2"
                                     >
                                         View Invoices

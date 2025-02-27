@@ -1,19 +1,26 @@
-'use client'
-import React, { useEffect, useState } from 'react';
-import { useForm, useFieldArray, UseFormSetValue, UseFormWatch, SetValueConfig } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { toast } from 'sonner';
+"use client";
+import React, { useEffect, useState } from "react";
+import { useForm, useFieldArray, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { string, z } from "zod";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 // Enums
-const OrderTypeEnum = z.enum(['READY_MADE', 'CUSTOM_TAILORED']);
-const OrderStatusEnum = z.enum(['confirmed', 'processing', 'tailoring', 'ready', 'delivered']);
-const PaymentStatusEnum = z.enum(['NO_PAYMENT', 'PARTIAL', 'PAID']);
-const PaymentTypeEnum = z.enum(['VISA', 'CASH', 'BANK_TRANSFER']);
+const OrderTypeEnum = z.enum(["READY_MADE", "CUSTOM_TAILORED"]);
+const OrderStatusEnum = z.enum([
+  "confirmed",
+  "processing",
+  "tailoring",
+  "ready",
+  "delivered",
+]);
+const PaymentStatusEnum = z.enum(["NO_PAYMENT", "PARTIAL", "PAID"]);
+const PaymentTypeEnum = z.enum(["VISA", "CASH", "BANK_TRANSFER"]);
 
 // Schemas
 const measurementSchema = z.object({
+  productName: z.string(),
   LengthInFront: z.number(),
   lengthBehind: z.number(),
   shoulder: z.number(),
@@ -22,12 +29,12 @@ const measurementSchema = z.object({
   middle: z.number(),
   chest: z.number(),
   endOfShow: z.number(),
-  fabricId: z.string(),
   notes: z.string().optional(),
 });
 
 const fabricSchema = z.object({
-  name: z.string(),
+  itemId: z.string(),
+  fabricName: z.string(),
   type: z.string(),
   color: z.string(),
   quantity: z.number(),
@@ -41,60 +48,63 @@ const transactionSchema = z.object({
   paymentMethod: z.string(),
 });
 
-const orderSchema = z.object({
-  InvoiceId: z.string(),
+const itemSchema = z.object({
   type: OrderTypeEnum,
+  productName: z.string(),
+  sectionName: z.string(),
+  productPrice: z.number(),
+  quantity: z.number(),
+});
+const orderSchema = z.object({
   branch: z.string(),
   status: OrderStatusEnum.default("confirmed"),
   orderedFrom: z.string().default("SHOP"),
   customerName: z.string(),
-  sectionName: z.string(),
   salesPersonName: z.string(),
   customerLocation: z.string(),
   paymentStatus: PaymentStatusEnum.default("NO_PAYMENT"),
-  productName: z.string(),
-  productPrice: z.number(),
-  quantity: z.number(),
   totalAmount: z.number(),
   orderRegisteredBy: z.string().optional(),
   PendingAmount: z.number(),
   PaidAmount: z.number().default(0),
   assignedTo: z.string().optional(),
-  dueDate: z.date(),
+  PaymentdueDate: z.date(),
+  deliveryDate: z.date()
 });
 
 const createOrderSchema = z.object({
   order: orderSchema,
+  items: z.array(itemSchema).min(1),
   transactions: z.array(transactionSchema).optional(),
   fabrics: z.array(fabricSchema).optional(),
   measurements: z.array(measurementSchema).optional(),
-}).superRefine((data, ctx) => {
-  const { order, transactions, fabrics, measurements } = data;
-  if (transactions && transactions.length > 0) {
-    const totalPaid = transactions.reduce((sum, t) => sum + t.amount, 0);
-    
-   
-  }
-  if (order.type === "CUSTOM_TAILORED") {
-    if (fabrics && fabrics.length > 0) {
-      const totalFabricQty = fabrics.reduce((sum, f) => sum + f.quantity, 0);
-      if (totalFabricQty !== order.quantity) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["fabrics"],
-          message: `Total fabric quantity (${totalFabricQty}) must match order quantity (${order.quantity}).`,
-        });
-      }
-    }
-    if (order.quantity > 0 && (!measurements || measurements.length !== order.quantity)) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["measurements"],
-        message: `Number of measurements (${measurements?.length || 0}) must match order quantity (${order.quantity}).`,
-      });
-    }
-  }
 });
+// .superRefine((data, ctx) => {
+//   const { order, transactions, fabrics, measurements } = data;
+//   if (transactions && transactions.length > 0) {
+//     const totalPaid = transactions.reduce((sum, t) => sum + t.amount, 0);
+
+//   }
+//   if (order.type === "CUSTOM_TAILORED") {
+//     if (fabrics && fabrics.length > 0) {
+//       const totalFabricQty = fabrics.reduce((sum, f) => sum + f.quantity, 0);
+//       if (totalFabricQty !== order.quantity) {
+//         ctx.addIssue({
+//           code: "custom",
+//           path: ["fabrics"],
+//           message: `Total fabric quantity (${totalFabricQty}) must match order quantity (${order.quantity}).`,
+//         });
+//       }
+//     }
+//     if (order.quantity > 0 && (!measurements || measurements.length !== order.quantity)) {
+//       ctx.addIssue({
+//         code: "custom",
+//         path: ["measurements"],
+//         message: `Number of measurements (${measurements?.length || 0}) must match order quantity (${order.quantity}).`,
+//       });
+//     }
+//   }
+// });
 
 // Types
 type OrderType = z.infer<typeof OrderTypeEnum>;
@@ -124,11 +134,11 @@ interface SalesPerson {
 }
 
 interface Product {
+  id: string;
   name: string;
   price: number;
   sectionName: string;
 }
-
 
 interface SearchSelectProps<T> {
   items: T[];
@@ -139,7 +149,9 @@ interface SearchSelectProps<T> {
   columns: { key: keyof T; label: string }[]; // Defines table columns
   valueKey: keyof T; // Specifies which field to use as value
   isLoading: boolean;
-  setValue?: any
+  setValue?: any;
+  formIndex?: number
+  watch?: any
 }
 
 const SearchSelect = <T extends Record<string, any>>({
@@ -151,7 +163,9 @@ const SearchSelect = <T extends Record<string, any>>({
   columns,
   valueKey,
   isLoading,
-  setValue
+  setValue,
+  formIndex,
+  watch
 }: SearchSelectProps<T>) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -165,9 +179,13 @@ const SearchSelect = <T extends Record<string, any>>({
         .includes(search.toLowerCase())
     );
 
+  
+
   return (
     <div className="relative">
-      <label className="block text-sm font-medium text-gray-300 mb-1">{label}</label>
+      <label className="block text-sm font-medium text-gray-300 mb-1">
+        {label}
+      </label>
       <div className="relative">
         <input
           type="text"
@@ -182,26 +200,38 @@ const SearchSelect = <T extends Record<string, any>>({
           onClick={() => setIsOpen(!isOpen)}
           className="absolute inset-y-0 right-0 flex items-center px-2 text-gray-400"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </button>
       </div>
 
       {isOpen && (
-        <div className="absolute z-10 w-full mt-1 bg-gray-700 border border-gray-600 rounded-md shadow-lg max-h-60 overflow-auto">
+        <div className="absolute z-10 w-full mt-1 bg-blue-50 border border-gray-600 rounded-md shadow-lg max-h-60 overflow-auto">
           {isLoading ? (
             <div className="flex items-center justify-center py-2 text-sm text-gray-400">
               Loading options...
             </div>
           ) : filteredItems.length === 0 ? (
-            <div className="px-3 py-2 text-sm text-gray-400">No results found</div>
+            <div className="px-3 py-2 text-sm text-gray-400">
+              No results found
+            </div>
           ) : (
-            <table className="w-full text-sm text-white">
+            <table className="w-full text-sm text-gray-800">
               <thead className="bg-gray-800">
                 <tr>
                   {columns.map((col) => (
-                    <th key={String(col.key)} className="px-3 py-2 text-left">
+                    <th key={String(col.key)} className="px-3 py-2 text-left text-white">
                       {col.label}
                     </th>
                   ))}
@@ -211,24 +241,47 @@ const SearchSelect = <T extends Record<string, any>>({
                 {filteredItems.map((item) => (
                   <tr
                     key={String(item[valueKey])}
-                    className="cursor-pointer hover:bg-gray-600"
+                    className="cursor-pointer hover:bg-gray-200"
                     onClick={() => {
+                      
+                      if (label == "Product for fabric") {
+                        console.log(item.id)
+                        onChange(item.id)
+                        setSearch(item.id); // Show selected value
+                        setIsOpen(false);
+                        return;
+                      }
+
+                      // if (label == "Fabric") {
+                      //   console.log(item.id)
+                      //   onChange(item.id)
+                      //   setSearch(item.id); // Show selected value
+                      //   setIsOpen(false);
+                      //   return;
+                      // }
                       onChange(item);
                       setSearch(String(item[valueKey])); // Show selected value
                       setIsOpen(false);
                       // If selecting a product, also set the section name
-                      if (label === "Product") {
-                        setValue("order.sectionName", item.sectionName);
-                        setValue("order.productPrice", item.price);
+                      if (label === "Product" && formIndex !== undefined) {
+                        setValue(`items.${formIndex}.sectionName`, item.sectionName);
+                        setValue(`items.${formIndex}.productPrice`, item.price, { shouldValidate: true });
+                        // Force the quantity to be at least 1 if it's currently 0
+                        const currentQty = watch(`items.${formIndex}.quantity`) || 0;
+                        if (currentQty === 0) {
+                          setValue(`items.${formIndex}.quantity`, 1, { shouldValidate: true });
+                        }
                       }
-
-                      if(label === "Customer") {
-                        setValue("order.customerLocation", item.location)
+                      if (label === "Customer") {
+                        setValue("order.customerLocation", item.location);
                       }
                     }}
                   >
                     {columns.map((col) => (
-                      <td key={String(col.key)} className="px-3 py-2 border-b border-gray-700">
+                      <td
+                        key={String(col.key)}
+                        className="px-3 py-2 border-b border-gray-700"
+                      >
                         {String(item[col.key])}
                       </td>
                     ))}
@@ -243,11 +296,19 @@ const SearchSelect = <T extends Record<string, any>>({
   );
 };
 
-
 const OrderCreationForm: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'details' | 'measurements' | 'fabrics' | 'payment'>('details');
+  const [activeTab, setActiveTab] = useState<
+    "details" | "measurements" | "fabrics" | "payment"
+  >("details");
 
-  const { register, control, handleSubmit, watch, formState: { errors }, setValue } = useForm<CreateOrderFormData>({
+  const {
+    register,
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors },
+    setValue,
+  } = useForm<CreateOrderFormData>({
     resolver: zodResolver(createOrderSchema),
     defaultValues: {
       order: {
@@ -255,37 +316,66 @@ const OrderCreationForm: React.FC = () => {
         orderedFrom: "SHOP",
         paymentStatus: "NO_PAYMENT",
         PaidAmount: 0,
-        dueDate: new Date(),
-        type: "READY_MADE",
+        PaymentdueDate: new Date(),
+
         totalAmount: 0,
       },
+      items: [
+        {
+          type: "READY_MADE",
+          productPrice: 0,
+          productName: "",
+          sectionName: "",
+          quantity: 0,
+        },
+      ],
       transactions: [],
       fabrics: [],
       measurements: [],
-    }
+    },
   });
 
-  const { fields: fabricFields, append: appendFabric, remove: removeFabric } = useFieldArray({
+  const {
+    fields: items,
+    append: appendItem,
+    remove: removeItem,
+  } = useFieldArray({
+    control,
+    name: "items",
+  });
+  const {
+    fields: fabricFields,
+    append: appendFabric,
+    remove: removeFabric,
+  } = useFieldArray({
     control,
     name: "fabrics",
   });
 
-  const { fields: measurementFields, append: appendMeasurement, remove: removeMeasurement } = useFieldArray({
+  const {
+    fields: measurementFields,
+    append: appendMeasurement,
+    remove: removeMeasurement,
+  } = useFieldArray({
     control,
     name: "measurements",
   });
 
-  const { fields: transactionFields, append: appendTransaction, remove: removeTransaction } = useFieldArray({
+  const {
+    fields: transactionFields,
+    append: appendTransaction,
+    remove: removeTransaction,
+  } = useFieldArray({
     control,
     name: "transactions",
   });
 
   const orderMutation = useMutation({
     mutationFn: async (data: CreateOrderFormData) => {
-      const response = await fetch('http://34.18.73.81:3000/orders/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+      const response = await fetch("http://34.18.73.81:3000/orders/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(data),
       });
       const json = await response.json();
@@ -293,7 +383,7 @@ const OrderCreationForm: React.FC = () => {
       return;
     },
     onSuccess: () => {
-      toast.success('Order created successfully');
+      toast.success("Order created successfully");
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -301,71 +391,110 @@ const OrderCreationForm: React.FC = () => {
   });
 
   const { data: options, isLoading } = useQuery({
-    queryKey: ['options'],
+    queryKey: ["options"],
     queryFn: async () => {
-      const response = await fetch('http://34.18.73.81:3000/orders/values/distinct', {
-        credentials: 'include',
-        headers: {
-          "Content-Type": 'application/json'
+      const response = await fetch(
+        "http://34.18.73.81:3000/orders/values/distinct",
+        {
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      })
-      return await response.json()
-    }
-  })
+      );
+      return await response.json();
+    },
+  });
 
-  const isCustomTailored = watch("order.type") === "CUSTOM_TAILORED";
-  const totalAmount = watch('order.totalAmount') || 0;
-  const paidAmount = watch('order.PaidAmount') || 0;
-  const pendingAmount = totalAmount - paidAmount;
+  const pendingAmount = watch("order.PendingAmount");
 
-  useEffect(() => {
-    setValue('order.PendingAmount', pendingAmount);
-  }, [paidAmount, totalAmount, setValue]);
 
   const onSubmit = (data: CreateOrderFormData) => {
     orderMutation.mutate(data);
   };
 
-  const productPrice = watch("order.productPrice");
-  const productQty = watch("order.quantity")
+  const totalAmount = watch("order.totalAmount") || 0;
+  const paidAmount = watch("order.PaidAmount") || 0;
+
+  const itemsWatch = useWatch({
+    control,
+    name: "items",
+  });
+
+  const transactionsWatch = useWatch({
+    control,
+    name: "transactions",
+  });
+
+  // Replace your existing useEffect hooks with this combined approach
   useEffect(() => {
-    setValue("order.totalAmount", productPrice * productQty)
-  }, [productPrice, productQty])
+
+    // Calculate total from items
+    const calculatedTotal = itemsWatch.reduce((acc, item) => {
+      // Force conversion to numbers and handle empty values
+      const price = Number(item.productPrice) || 0;
+      const qty = Number(item.quantity) || 0;
+      return acc + (price * qty);
+    }, 0);
+
+    // Calculate paid amount from transactions
+    const calculatedPaid = transactionsWatch ? transactionsWatch.reduce((acc, transaction) => {
+      // Force conversion to numbers and handle empty values
+      return acc + (Number(transaction.amount) || 0);
+    }, 0) : 0;
+
+    // Calculate pending amount
+    const calculatedPending = calculatedTotal - calculatedPaid;
+
+    // Update form values
+    setValue("order.totalAmount", calculatedTotal, { shouldValidate: true });
+    setValue("order.PaidAmount", calculatedPaid, { shouldValidate: true });
+    setValue("order.PendingAmount", calculatedPending, { shouldValidate: true });
+
+    console.log("Calculations updated:", {
+      totalAmount: calculatedTotal,
+      paidAmount: calculatedPaid,
+      pendingAmount: calculatedPending
+    });
+  }, [itemsWatch, transactionsWatch]);
 
   useEffect(() => {
-    console.log(errors)
+    console.log(errors);
   }, [errors]);
-
-
 
   return (
     <div className=" bg-gray-900 p-6 max-h-[calc(100vh-71px)] overflow-y-auto">
-      <form onSubmit={handleSubmit(onSubmit)} className="max-w-6xl mx-auto space-y-6">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="max-w-6xl mx-auto space-y-6"
+      >
         {/* Navigation Tabs */}
         <div className="border-b border-gray-700">
           <nav className="flex space-x-4">
-            {watch('order.type') !== "READY_MADE" ?
-              (['details', 'measurements', 'fabrics', 'payment'] as const).map((tab) => (
+            {true
+              ? (
+                ["details", "measurements", "fabrics", "payment"] as const
+              ).map((tab) => (
                 <button
                   key={tab}
                   type="button"
                   onClick={() => setActiveTab(tab)}
                   className={`px-4 py-2 text-sm font-medium rounded-t-lg ${activeTab === tab
-                    ? 'bg-gray-800 text-white border-b-2 border-blue-500'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                    ? "bg-gray-800 text-white border-b-2 border-blue-500"
+                    : "text-gray-400 hover:text-white hover:bg-gray-800"
                     }`}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
                 </button>
               ))
-              : (['details', 'payment'] as const).map((tab) => (
+              : (["details", "payment"] as const).map((tab) => (
                 <button
                   key={tab}
                   type="button"
                   onClick={() => setActiveTab(tab)}
                   className={`px-4 py-2 text-sm font-medium rounded-t-lg ${activeTab === tab
-                    ? 'bg-gray-800 text-white border-b-2 border-blue-500'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                    ? "bg-gray-800 text-white border-b-2 border-blue-500"
+                    : "text-gray-400 hover:text-white hover:bg-gray-800"
                     }`}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -375,30 +504,25 @@ const OrderCreationForm: React.FC = () => {
         </div>
 
         {/* Order Details Section */}
-        <div className={activeTab === 'details' ? 'block' : 'hidden'}>
+        <div className={activeTab === "details" ? "block" : "hidden"}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300">Invoice ID</label>
+              {/* <div>
+                <label className="block text-sm font-medium text-gray-300">
+                  Invoice ID
+                </label>
                 <input
-                  {...register('order.InvoiceId')}
+                  {...register("order.InvoiceId")}
                   className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white px-3 py-2 outline-none focus:border-blue-600 focus"
                 />
-              </div>
+              </div> */}
+
               <div>
-                <label className="block text-sm font-medium text-gray-300">Order Type</label>
+                <label className="block text-sm font-medium text-gray-300">
+                  Status
+                </label>
                 <select
-                  {...register('order.type')}
-                  className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white px-3 py-2 outline-none focus:border-blue-600 focus"
-                >
-                  <option value="READY_MADE">Ready Made</option>
-                  <option value="CUSTOM_TAILORED">Custom Tailored</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300">Status</label>
-                <select
-                  {...register('order.status')}
+                  {...register("order.status")}
                   className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white px-3 py-2 outline-none focus:border-blue-600 focus"
                 >
                   <option value="confirmed">Confirmed</option>
@@ -412,33 +536,31 @@ const OrderCreationForm: React.FC = () => {
               <SearchSelect<Customer>
                 isLoading={isLoading}
                 items={isLoading ? [] : options.customers}
-                value={watch('order.customerName')}
+                value={watch("order.customerName")}
                 onChange={(item) => {
-                  setValue('order.customerName', item.name);
+                  setValue("order.customerName", item.name);
                 }}
                 columns={[
                   { key: "name", label: "Customer Name" },
                   { key: "phone", label: "Phone Number" },
-                  {key: "location", label: "Customer location"}
+                  { key: "location", label: "Customer location" },
                 ]}
                 setValue={setValue}
-                valueKey='name'
+                valueKey="name"
                 placeholder="Search customer..."
                 label="Customer"
               />
 
-
-
               <SearchSelect<SalesPerson>
                 isLoading={isLoading}
                 items={isLoading ? [] : options.salesPersons}
-                value={watch('order.salesPersonName')}
+                value={watch("order.salesPersonName")}
                 onChange={(item) => {
-                  setValue('order.salesPersonName', item.name);
+                  setValue("order.salesPersonName", item.name);
                 }}
                 columns={[
                   { key: "id", label: "id" },
-                  { key: "name", label: "Salesperson Name" }
+                  { key: "name", label: "Salesperson Name" },
                 ]}
                 valueKey="name"
                 placeholder="Search sales person..."
@@ -447,60 +569,48 @@ const OrderCreationForm: React.FC = () => {
             </div>
 
             <div className="space-y-4">
-              <SearchSelect<Product>
-                isLoading={isLoading}
-                columns={[
-                  { key: "name", label: "Product Name" },
-                  { key: "sectionName", label: "Section" },
-                  { key: "price", label: "Price" }
-                ]}
-                setValue={setValue}
-                valueKey="name"
-                items={isLoading ? [] : options.products}
-                value={watch('order.productName')}
-                onChange={(item) => {
-                  setValue('order.productName', item.name);
-                  setValue('order.productPrice', item.price);
-                }}
-                placeholder="Search product..."
-                label="Product"
-              />
-
               <div>
-                <label className="block text-sm font-medium text-gray-300">Branch</label>
+                <label className="block text-sm font-medium text-gray-300">
+                  Branch
+                </label>
                 <input
-                  {...register('order.branch')}
+                  {...register("order.branch")}
                   className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white px-3 py-2 outline-none focus:border-blue-600 focus"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-300">Customer Location</label>
+              {/* <div>
+                <label className="block text-sm font-medium text-gray-300">
+                  Customer Location
+                </label>
                 <input
-                  {...register('order.customerLocation')}
+                  {...register("order.customerLocation")}
                   className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white px-3 py-2 outline-none focus:border-blue-600 focus"
                 />
-              </div>
+              </div> */}
 
               <div>
-                <label className="block text-sm font-medium text-gray-300">Quantity</label>
-                <input
-                  type="number"
-                  {...register('order.quantity', { valueAsNumber: true })}
-                  className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white px-3 py-2 outline-none focus:border-blue-600 focus"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300">Due Date</label>
+                <label className="block text-sm font-medium text-gray-300">
+                  Payment Due Date
+                </label>
                 <input
                   type="date"
-                  {...register('order.dueDate', {valueAsDate: true})}
+                  {...register("order.PaymentdueDate", { valueAsDate: true })}
+                  className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white px-3 py-2 outline-none focus:border-blue-600 focus"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300">
+                  Expected Delivery Date
+                </label>
+                <input
+                  type="date"
+                  {...register("order.deliveryDate", { valueAsDate: true })}
                   className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white px-3 py-2 outline-none focus:border-blue-600 focus"
                 />
               </div>
 
-              {isCustomTailored && (
+              {/* {isCustomTailored && (
                 <div>
                   <label className="block text-sm font-medium text-gray-300">Assigned To</label>
                   <input
@@ -508,23 +618,118 @@ const OrderCreationForm: React.FC = () => {
                     className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white px-3 py-2 outline-none focus:border-blue-600 focus"
                   />
                 </div>
-              )}
+              )} */}
+            </div>
+
+            <div className="space-y-4 col-span-full">
+              <div className="flex justify-between items-center">
+                <h2 className="text-lg font-medium text-white">
+                  Product items
+                </h2>
+                <button
+                  type="button"
+                  onClick={() =>
+                    appendItem({
+                      type: "READY_MADE",
+                      productName: "",
+                      sectionName: "",
+                      productPrice: 0,
+                      quantity: 0,
+                    })
+                  }
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  Add new item
+                </button>
+              </div>
+              {items.map((field, index) => (
+                <div key={field.id} className="p-4 bg-gray-800 rounded-lg">
+                  <div className="grid grid-cols-3 gap-5 w-full">
+                    <div className="flex flex-1 col-span-full justify-start">
+                      <h1 className="text-2xl font-bold">{index + 1} .</h1>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300">
+                        Order Type
+                      </label>
+                      <select
+                        {...register(`items.${index}.type` as const)}
+                        className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white px-3 py-2 outline-none focus:border-blue-600 focus"
+                      >
+                        <option value="READY_MADE">Ready Made</option>
+                        <option value="CUSTOM_TAILORED">Custom Tailored</option>
+                      </select>
+                    </div>
+                    <SearchSelect<Product>
+                      isLoading={isLoading}
+                      columns={[
+                        { key: "name", label: "Product Name" },
+                        { key: "sectionName", label: "Section" },
+                        { key: "price", label: "Price" },
+                      ]}
+                      setValue={setValue}
+                      valueKey="name"
+                      items={isLoading ? [] : options.products}
+                      value={watch("items")[index].productName}
+                      watch={watch}
+                      onChange={(item) => {
+                        setValue(
+                          `items.${index}.productName` as const,
+                          item.name
+                        );
+                        setValue(
+                          `items.${index}.productPrice` as const,
+                          item.price
+                        );
+                      }}
+                      placeholder="Search product..."
+                      label="Product"
+                      formIndex={index} // Add this line to pass the current index
+                    />
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300">
+                        Quantity
+                      </label>
+                      <input
+                        type="number"
+                        onWheel={(e) => e.currentTarget.blur()}
+                        {...register(`items.${index}.quantity` as const, { valueAsNumber: true })}
+                        className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white px-3 py-2 outline-none focus:border-blue-600 focus"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-4 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => removeItem(index)}
+                      className="px-4 py-2 bg-red-600/20 text-red-200 border border-red-600 rounded-md hover:bg-red-600/30"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
-        <div className={`${activeTab === 'fabrics' && isCustomTailored ? 'block' : 'hidden'}`}>
+        <div className={`${activeTab === "fabrics" ? "block" : "hidden"}`}>
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-medium text-white">Fabrics</h2>
               <button
                 type="button"
-                onClick={() => appendFabric({
-                  name: "",
-                  type: "",
-                  color: "",
-                  quantity: 0
-                })}
+                onClick={() =>
+                  appendFabric({
+                    itemId: "",
+                    fabricName: "",
+                    type: "",
+                    color: "",
+                    quantity: 0,
+                  })
+                }
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
               >
                 Add new fabric
@@ -532,33 +737,67 @@ const OrderCreationForm: React.FC = () => {
             </div>
             {fabricFields.map((field, index) => (
               <div key={field.id} className="p-4 bg-gray-800 rounded-lg">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <SearchSelect<Product>
+                      isLoading={isLoading}
+                      columns={[
+                        { key: "id", label: "Product ID" },
+                        { key: "name", label: "Product Name" },
+                        { key: "sectionName", label: "Section" },
+                        { key: "price", label: "Price" },
+                      ]}
+                      setValue={setValue}
+                      valueKey="name"
+                      items={isLoading ? [] : options.products}
+                      value={watch("fabrics")![index].itemId}
+                      watch={watch}
+                      onChange={(item) => {
+                        console.log(item)
+                        setValue(
+                          `fabrics.${index}.itemId` as const,
+                          item
+                        );
+                      }}
+                      placeholder="Search product..."
+                      label="Product for fabric"
+                    />
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+
+
                   {[
-                    { name: 'name', label: 'Fabric name' },
-                    { name: 'type', label: 'Fabric type' },
-                    { name: 'color', label: 'Fabric color' },
+                    { name: "fabricName", label: "Fabric name" },
+                    { name: "type", label: "Fabric type" },
+                    { name: "color", label: "Fabric color" },
                   ].map((fabric) => (
                     <div key={fabric.name}>
-                      <label className="block text-sm font-medium text-gray-300">{fabric.label}</label>
+                      <label className="block text-sm font-medium text-gray-300">
+                        {fabric.label}
+                      </label>
                       <input
                         type="text"
                         step="0.1"
-                        {...register(`fabrics.${index}.${fabric.name as keyof Fabric}` as const)}
+                        {...register(
+                          `fabrics.${index}.${fabric.name as keyof Fabric
+                          }` as const
+                        )}
                         className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white px-3 py-2 outline-none focus:border-blue-600 focus"
                       />
                     </div>
                   ))}
-                  <div >
-                    <label className="block text-sm font-medium text-gray-300">Fabric quantity</label>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300">
+                      Fabric quantity
+                    </label>
                     <input
                       type="number"
+                      onWheel={(e) => e.currentTarget.blur()}
                       step="0.1"
-                      {...register(`fabrics.${index}.quantity`, { valueAsNumber: true })}
+                      {...register(`fabrics.${index}.quantity`, {
+                        valueAsNumber: true,
+                      })}
                       className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white px-3 py-2 outline-none focus:border-blue-600 focus"
                     />
                   </div>
                 </div>
-
 
                 <div className="mt-4 flex justify-end">
                   <button
@@ -574,50 +813,81 @@ const OrderCreationForm: React.FC = () => {
           </div>
         </div>
         {/* Measurements Section */}
-        <div className={`${activeTab === 'measurements' && isCustomTailored ? 'block' : 'hidden'}`}>
+        <div className={`${activeTab === "measurements" ? "block" : "hidden"}`}>
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-medium text-white">Measurements</h2>
               <button
                 type="button"
-                onClick={() => appendMeasurement({
-                  LengthInFront: 0,
-                  lengthBehind: 0,
-                  shoulder: 0,
-                  hands: 0,
-                  neck: 0,
-                  middle: 0,
-                  chest: 0,
-                  endOfShow: 0,
-                  fabricId: '',
-                  notes: ''
-                })}
+                onClick={() =>
+                  appendMeasurement({
+                    productName: "",
+                    LengthInFront: 0,
+                    lengthBehind: 0,
+                    shoulder: 0,
+                    hands: 0,
+                    neck: 0,
+                    middle: 0,
+                    chest: 0,
+                    endOfShow: 0,
+                    notes: "",
+                  })
+                }
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
               >
                 Add Measurement
               </button>
-
             </div>
 
             {measurementFields.map((field, index) => (
               <div key={field.id} className="p-4 bg-gray-800 rounded-lg">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <SearchSelect<Product>
+                      isLoading={isLoading}
+                      columns={[
+                        { key: "id", label: "Product Id" },
+                        { key: "name", label: "Product Name" },
+                        { key: "sectionName", label: "Section" },
+                        { key: "price", label: "Price" },
+                      ]}
+                      setValue={setValue}
+                      valueKey="name"
+                      items={isLoading ? [] : options.products}
+                      value={watch("measurements")![index].productName}
+                      watch={watch}
+                      onChange={(item) => {
+                        setValue(
+                          `measurements.${index}.productName` as const,
+                          item.name
+                        );
+                      }}
+                      placeholder="Search product..."
+                      label="Product"
+                      formIndex={index} // Add this line to pass the current index
+                    />
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 my-4">
                   {[
-                    { name: 'LengthInFront', label: 'Length in Front' },
-                    { name: 'lengthBehind', label: 'Length Behind' },
-                    { name: 'shoulder', label: 'Shoulder' },
-                    { name: 'hands', label: 'Hands' },
-                    { name: 'neck', label: 'Neck' },
-                    { name: 'middle', label: 'Middle' },
-                    { name: 'chest', label: 'Chest' },
-                    { name: 'endOfShow', label: 'End of Show' }
+                    { name: "LengthInFront", label: "Length in Front" },
+                    { name: "lengthBehind", label: "Length Behind" },
+                    { name: "shoulder", label: "Shoulder" },
+                    { name: "hands", label: "Hands" },
+                    { name: "neck", label: "Neck" },
+                    { name: "middle", label: "Middle" },
+                    { name: "chest", label: "Chest" },
+                    { name: "endOfShow", label: "End of Show" },
                   ].map((measurement) => (
                     <div key={measurement.name}>
-                      <label className="block text-sm font-medium text-gray-300">{measurement.label}</label>
+                      <label className="block text-sm font-medium text-gray-300">
+                        {measurement.label}
+                      </label>
                       <input
                         type="number"
+                        onWheel={(e) => e.currentTarget.blur()}
                         step="0.1"
-                        {...register(`measurements.${index}.${measurement.name as keyof Measurement}` as const, { valueAsNumber: true })}
+                        {...register(
+                          `measurements.${index}.${measurement.name as keyof Measurement
+                          }` as const,
+                          { valueAsNumber: true }
+                        )}
                         className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white px-3 py-2 outline-none focus:border-blue-600 focus"
                       />
                     </div>
@@ -625,16 +895,20 @@ const OrderCreationForm: React.FC = () => {
                 </div>
 
                 <div className="mt-4 space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300">Fabric ID</label>
+                  {/* <div>
+                    <label className="block text-sm font-medium text-gray-300">
+                      Fabric ID
+                    </label>
                     <input
                       {...register(`measurements.${index}.fabricId`)}
                       className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white px-3 py-2 outline-none focus:border-blue-600 focus"
                     />
-                  </div>
+                  </div> */}
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-300">Notes</label>
+                    <label className="block text-sm font-medium text-gray-300">
+                      Notes
+                    </label>
                     <textarea
                       {...register(`measurements.${index}.notes`)}
                       className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white px-3 py-2 outline-none focus:border-blue-600 focus"
@@ -656,24 +930,30 @@ const OrderCreationForm: React.FC = () => {
           </div>
         </div>
 
-
-
         {/* Payment Section */}
-        <div className={activeTab === 'payment' ? 'block' : 'hidden'}>
+        <div className={activeTab === "payment" ? "block" : "hidden"}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div className="p-6 bg-gray-800 rounded-lg">
-              <h3 className="text-lg font-medium text-gray-300 mb-2">Total Amount</h3>
+              <h3 className="text-lg font-medium text-gray-300 mb-2">
+                Total Amount
+              </h3>
               <p className="text-3xl font-bold text-white">${totalAmount}</p>
             </div>
 
             <div className="p-6 bg-gray-800 rounded-lg">
-              <h3 className="text-lg font-medium text-gray-300 mb-2">Paid Amount</h3>
+              <h3 className="text-lg font-medium text-gray-300 mb-2">
+                Paid Amount
+              </h3>
               <p className="text-3xl font-bold text-green-500">${paidAmount}</p>
             </div>
 
             <div className="p-6 bg-gray-800 rounded-lg">
-              <h3 className="text-lg font-medium text-gray-300 mb-2">Pending Amount</h3>
-              <p className="text-3xl font-bold text-yellow-500">${pendingAmount}</p>
+              <h3 className="text-lg font-medium text-gray-300 mb-2">
+                Pending Amount
+              </h3>
+              <p className="text-3xl font-bold text-yellow-500">
+                ${pendingAmount}
+              </p>
             </div>
           </div>
 
@@ -682,13 +962,15 @@ const OrderCreationForm: React.FC = () => {
               <h2 className="text-lg font-medium text-white">Transactions</h2>
               <button
                 type="button"
-                onClick={() => appendTransaction({
-                  paymentType: "CASH",
-                  amount: 0,
-                  status: "PENDING",
-                  paymentDate: new Date(),
-                  paymentMethod: ""
-                })}
+                onClick={() =>
+                  appendTransaction({
+                    paymentType: "CASH",
+                    amount: 0,
+                    status: "PENDING",
+                    paymentDate: new Date(),
+                    paymentMethod: "",
+                  })
+                }
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
               >
                 Add Transaction
@@ -699,7 +981,9 @@ const OrderCreationForm: React.FC = () => {
               <div key={field.id} className="p-4 bg-gray-800 rounded-lg">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-300">Payment Type</label>
+                    <label className="block text-sm font-medium text-gray-300">
+                      Payment Type
+                    </label>
                     <select
                       {...register(`transactions.${index}.paymentType`)}
                       className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white px-3 py-2 outline-none focus:border-blue-600 focus"
@@ -711,17 +995,24 @@ const OrderCreationForm: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-300">Amount</label>
+                    <label className="block text-sm font-medium text-gray-300">
+                      Amount
+                    </label>
                     <input
                       type="number"
+                      onWheel={(e) => e.currentTarget.blur()}
                       step="0.01"
-                      {...register(`transactions.${index}.amount`, { valueAsNumber: true })}
+                      {...register(`transactions.${index}.amount`, {
+                        valueAsNumber: true,
+                      })}
                       className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white px-3 py-2 outline-none focus:border-blue-600 focus"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-300">Payment Method</label>
+                    <label className="block text-sm font-medium text-gray-300">
+                      Payment Method
+                    </label>
                     <input
                       {...register(`transactions.${index}.paymentMethod`)}
                       className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white px-3 py-2 outline-none focus:border-blue-600 focus"
@@ -729,10 +1020,14 @@ const OrderCreationForm: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-300">Payment Date</label>
+                    <label className="block text-sm font-medium text-gray-300">
+                      Payment Date
+                    </label>
                     <input
                       type="date"
-                      {...register(`transactions.${index}.paymentDate`, {valueAsDate: true})}
+                      {...register(`transactions.${index}.paymentDate`, {
+                        valueAsDate: true,
+                      })}
                       className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white px-3 py-2 outline-none focus:border-blue-600 focus"
                     />
                   </div>
@@ -759,7 +1054,7 @@ const OrderCreationForm: React.FC = () => {
             disabled={orderMutation.isPending}
             className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 disabled:opacity-50"
           >
-            {orderMutation.isPending ? 'Creating Order...' : 'Create Order'}
+            {orderMutation.isPending ? "Creating Order..." : "Create Order"}
           </button>
         </div>
       </form>

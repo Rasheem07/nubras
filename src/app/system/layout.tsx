@@ -1,7 +1,7 @@
 'use client'
 import VerificationStates from "@/components/verificationUi";
 import { usePermission } from "@/hooks/usePermission"
-import { Shield } from "lucide-react";
+import { ArrowLeft, Shield } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -22,8 +22,12 @@ export default function SettingsLayout({
         
         <div className="flex">
           {/* Sidebar */}
-          <aside className="w-64 min-h-screen border-r border-gray-800">
+          <aside className="w-56 min-h-screen border-r border-gray-800">
             <nav className="p-4 space-y-2">
+              <Link href="/dashboard" className={`flex items-center px-3 py-2 text-sm rounded-lg  ${pathname == '/dashboard'?'bg-blue-600 text-white' :'text-gray-300 hover:bg-gray-800'}`}>
+                <ArrowLeft />
+                Back to dashboard
+              </Link>
               <div className="px-3 py-2 text-sm font-medium text-gray-400 uppercase">
                 Admin Settings
               </div>

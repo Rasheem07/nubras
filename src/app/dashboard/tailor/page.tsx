@@ -101,7 +101,7 @@ export default function EmployeeForm() {
         <Modal onClose={() => setIsModalOpen(false)} >
 
           <div className="max-w-xl mx-auto p-6 bg-gray-800 rounded-lg shadow-xl">
-            <h2 className="text-2xl font-bold mb-6 text-white">Add New Employee</h2>
+            <h2 className="text-2xl font-bold mb-6 text-white">Add New Tailor</h2>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* Name Field */}

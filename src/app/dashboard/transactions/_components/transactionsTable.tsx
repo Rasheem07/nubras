@@ -79,27 +79,27 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ transactions }) => 
                 <table className="w-full text-left text-gray-300">
                     <thead className="text-gray-400 border-b border-gray-700">
                         <tr>
-                            <th className="pb-3 px-4">Customer Name</th>
-                            <th className="pb-3 px-4">Amount</th>
-                            <th className="pb-3 px-4">Status</th>
-                            <th className="pb-3 px-4">Payment Type</th>
-                            <th className="pb-3 px-4">Transaction ID</th>
-                            <th className="pb-3 px-4">Payment Method</th>
-                            <th className="pb-3 px-4">Payment Date</th>
-                            <th className="pb-3 px-4">Actions</th>
+                            <th className="pb-3 px-4 text-nowrap">Customer Name</th>
+                            <th className="pb-3 px-4 text-nowrap">Amount</th>
+                            <th className="pb-3 px-4 text-nowrap">Status</th>
+                            <th className="pb-3 px-4 text-nowrap">Payment Type</th>
+                            <th className="pb-3 px-4 text-nowrap">Transaction ID</th>
+                            <th className="pb-3 px-4 text-nowrap">Payment Method</th>
+                            <th className="pb-3 px-4 text-nowrap">Payment Date</th>
+                            <th className="pb-3 px-4 text-nowrap">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-700">
                         {filteredTransactions.map((transaction) => (
                             <tr key={transaction.id} className="hover:bg-gray-700/50 transition-colors">
-                                <td className="py-2 px-4">{transaction.customerName}</td>
-                                <td className="py-2 px-4">AED {transaction.amount.toFixed(2)}</td>
-                                <td className="py-2 px-4">{transaction.status}</td>
-                                <td className="py-2 px-4">{transaction.paymentType}</td>
-                                <td className="py-2 px-4">{transaction.id}</td>
-                                <td className="py-2 px-4">{transaction.paymentMethod}</td>
-                                <td className="py-2 px-4">{new Date(transaction.paymentDate).toLocaleDateString()}</td>
-                                <td className="py-2 px-4">
+                                <td className="py-2 px-4 text-nowrap">{transaction.customerName}</td>
+                                <td className="py-2 px-4 text-nowrap">AED {transaction.amount.toFixed(2)}</td>
+                                <td className="py-2 px-4 text-nowrap">{transaction.status}</td>
+                                <td className="py-2 px-4 text-nowrap">{transaction.paymentType}</td>
+                                <td className="py-2 px-4 text-nowrap">{transaction.id}</td>
+                                <td className="py-2 px-4 text-nowrap">{transaction.paymentMethod}</td>
+                                <td className="py-2 px-4 text-nowrap">{new Date(transaction.paymentDate).toLocaleDateString()}</td>
+                                <td className="py-2 px-4 text-nowrap">
                                     <Link
                                         href={`/transactions/${transaction.id}`}
                                         className="text-blue-500 hover:text-blue-600 hover:underline underline-offset-2"

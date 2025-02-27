@@ -69,8 +69,8 @@ export default function Sidebar() {
 }
 
 const navItems = [
-    { name: "Dashboard", href: "/dashboard", icon: <LayoutDashboard /> },
     { name: "Orders", href: "/dashboard/orders", icon: <PackageCheck /> },
+    { name: "Analytics", href: "/dashboard", icon: <LayoutDashboard /> },
     { name: "Customers", href: "/dashboard/customers", icon: <Users /> },
     { name: "Services", href: "/dashboard/products", icon: <BadgePercent /> },
     { name: "Sales Persons", href: "/dashboard/sales-persons", icon: <UserCog /> },
