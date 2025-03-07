@@ -99,7 +99,7 @@ const DataTable = <T,>({ data, exportFilename, rowLink, view = "details", classN
                           View {view}
                         </Link>
 
-                      ) : null}
+                      ) : "--------"}
                     </td>
                   </tr>
                 ))}

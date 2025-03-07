@@ -31,7 +31,7 @@ export default function ServicesPage() {
   const {data: services, isLoading} = useQuery<Service[]>({
     queryKey: [section as string],
     queryFn: async () => {
-       const response = await fetch(`http://34.18.73.81:3000/service/${section}`, {
+       const response = await fetch(`https://alnubras.hopto.org:3000/service/${section}`, {
          headers: {
             "Content-Type": "application/json"
          },
@@ -66,7 +66,7 @@ export default function ServicesPage() {
 
   const {mutate: addNewService} = useMutation({
     mutationFn: async (data: ServiceFormData) => {
-        const response = await fetch('http://34.18.73.81:3000/service/add', {
+        const response = await fetch('https://alnubras.hopto.org:3000/service/add', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -105,7 +105,7 @@ export default function ServicesPage() {
       <div className="max-w-7xl mx-auto ">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-white">Services</h1>
+            <h1 className="text-2xl font-bold text-white">Services for {decodeURIComponent(section)}</h1>
             <p className="text-gray-400 mt-1">Manage your service offerings</p>
           </div>
           <button
@@ -232,7 +232,7 @@ export default function ServicesPage() {
               <div className="mt-4 grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-400">Price</p>
-                  <p className="font-semibold text-white">${service.price.toFixed(2)}</p>
+                  <p className="font-semibold text-white">AED {service.price.toFixed(2)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Type</p>
@@ -244,7 +244,7 @@ export default function ServicesPage() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Total Sales</p>
-                  <p className="font-semibold text-white">${service.totalSalesAmount.toFixed(2)}</p>
+                  <p className="font-semibold text-white">AED {service.totalSalesAmount.toFixed(2)}</p>
                 </div>
               </div>
             </div>

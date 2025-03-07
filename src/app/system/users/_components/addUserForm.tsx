@@ -44,7 +44,7 @@ export default function AddUserForm({ onClose }: { onClose: () => void }) {
                 formData.append("file", data.profilePicture);
             }
 
-            const response = await fetch("http://34.18.73.81:3000/admin/users/add", {
+            const response = await fetch("https://alnubras.hopto.org:3000/admin/users/add", {
                 method: "POST",
                 credentials: "include",
                 body: formData, // No need for Content-Type, browser sets it automatically

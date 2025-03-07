@@ -4,6 +4,7 @@ import { useState } from "react";
 import Modal from "../_components/Modal";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import SalespersonTable from "./_components/salesPersonTable";
+import { toast } from "sonner";
 
 export default function SalesPersonsPage() {
 
@@ -11,7 +12,7 @@ export default function SalesPersonsPage() {
     const queryClient = useQueryClient();
 
     const createSalesPerson = async (data: any) => {
-        const response = await fetch("http://34.18.73.81:3000/salesperson/create", {
+        const response = await fetch("https://alnubras.hopto.org:3000/salesperson/create", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -36,19 +37,20 @@ export default function SalesPersonsPage() {
 
     const { data: salespersons, isLoading, error } = useQuery({
         queryKey: ['salespersons'],
-        queryFn: () => fetch('http://34.18.73.81:3000/salesperson', { credentials: 'include' }).then(res => res.json())
+        queryFn: () => fetch('https://alnubras.hopto.org:3000/salesperson', { credentials: 'include' }).then(res => res.json())
     });
 
 
     const handleCreateSalesPerson = async (formData: FormData) => {
         const name = formData.get('name') as string;
+        const contact = formData.get('contact') as string;
 
 
-        if (!name) {
-            throw new Error('Name is required');
+        if (!name || !contact) {
+            toast.error('Name and contact is required');
         }
 
-        createSalesPersonMutation.mutate({ name });
+        createSalesPersonMutation.mutate({ name, contact});
     };
     return (
 
@@ -94,6 +96,16 @@ export default function SalesPersonsPage() {
                                         name="name"
                                         type="text"
                                         placeholder="Enter Sales person name..."
+                                        className="w-full p-3 bg-gray-700 rounded-lg border border-gray-600 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-400 mb-2">Contact</label>
+                                    <input
+                                        name="contact"
+                                        type="text"
+                                        placeholder="Enter Sales person contact..."
                                         className="w-full p-3 bg-gray-700 rounded-lg border border-gray-600 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                                         required
                                     />

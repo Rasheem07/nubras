@@ -11,13 +11,13 @@ function Callback() {
 
     useEffect(() => {
          // Ensure the user is logged in before processing URL redirection
-         if (!document.cookie.includes('isLogined=true') && !document.cookie.includes('isTailoredLogin=true')) {
+         if (!document.cookie.includes('isLogined=true') && !document.cookie.includes('isTailoredLogin=true') && !document.cookie.includes('isSalesmanLogined=true')) {
             router.replace('/login');
             return;
         }
 
         const checkUserAndRedirect = async () => {
-                const response = await fetch(`http://34.18.73.81:3000/role/user-type`, {
+                const response = await fetch(`https://alnubras.hopto.org:3000/role/user-type`, {
                     headers: {
                         'Content-Type': 'application/json'
                     },
@@ -30,15 +30,17 @@ function Callback() {
 
                 // If no URL is provided, redirect to the respective dashboard
                 if (!url) {
-                    router.replace(userType === 'admin' ? '/dashboard' : '/tailor');
+                    router.replace(userType === 'admin' ? '/dashboard' : userType === "tailor"?  '/tailor' : 'salesman');
                     return;
                 }
 
                 // Redirect based on role access restrictions
-                if (userType === 'admin' && url.startsWith('/tailor')) {
+                if (userType === 'admin' && (url.startsWith('/tailor') || url.startsWith('/salesman'))) {
                     router.replace('/dashboard');
-                } else if (userType === 'tailor' && url.startsWith('/dashboard')) {
+                } else if (userType === 'tailor' && (url.startsWith('/dashboard') || url.startsWith('salesman'))) {
                     router.replace('/tailor');
+                } else if (userType === 'salesman' && (url.startsWith('/dashboard') || url.startsWith('/tailor'))) {
+                    router.replace('/salesman');
                 } else if (userType === 'admin' && url.startsWith('/system')) {
                     router.replace('/system');
                 } else {

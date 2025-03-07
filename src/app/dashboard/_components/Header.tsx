@@ -37,7 +37,7 @@ export default function Header() {
     }
 
     const handleLogout = async () => {
-        await fetch('http://34.18.73.81:3000/auth/logout', {
+        await fetch('https://alnubras.hopto.org:3000/auth/logout', {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"

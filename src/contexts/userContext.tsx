@@ -14,7 +14,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         const fetchUserType = async () => {
-            const response = await fetch(`http://34.18.73.81:3000/role/user-type`, {
+            const response = await fetch(`https://alnubras.hopto.org:3000/role/user-type`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'

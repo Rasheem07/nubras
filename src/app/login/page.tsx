@@ -15,7 +15,7 @@ export default function TailorLogin() {
     const [error, setError] = useState('');
     const [isRedirecting, setIsRedirecting] = useState(false);
     const [resendTimer, setResendTimer] = useState(0);
-    const [userType, setUserType] = useState<'admin' | 'tailor'>('admin');
+    const [userType, setUserType] = useState<'admin' | 'tailor' | 'salesperson'>('admin');
 
     useEffect(() => {
         if (document.cookie.includes('isLogined=true')) {
@@ -32,11 +32,11 @@ export default function TailorLogin() {
         return () => clearTimeout(timer);
     }, [resendTimer]);
 
-    const apiPrefix = userType === 'admin' ? '/auth' : '/auth/tailor';
+    const apiPrefix = userType === 'admin' ? '/auth' : userType === "salesperson" ? '/auth/salesman' : '/auth/tailor';
 
     const sendOtpMutation = useMutation({
         mutationFn: async () => {
-            const response = await fetch(`http://34.18.73.81:3000${apiPrefix}/login`, {
+            const response = await fetch(`https://alnubras.hopto.org:3000${apiPrefix}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contact }),
@@ -62,7 +62,7 @@ export default function TailorLogin() {
 
     const verifyOtpMutation = useMutation({
         mutationFn: async () => {
-            const response = await fetch(`http://34.18.73.81:3000${apiPrefix}/verify-otp`, {
+            const response = await fetch(`https://alnubras.hopto.org:3000${apiPrefix}/verify-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -85,8 +85,10 @@ export default function TailorLogin() {
             if (userType === 'tailor') {
                 setIsRedirecting(true);
                 router.push('/tailor');
-            } else {
+            } else if(userType === "admin"){
                 router.push('/dashboard');
+            } else {
+                router.push('/salesman');
             }
         },
         onError: (err) => setError(err.message),
@@ -94,7 +96,7 @@ export default function TailorLogin() {
 
     const resendOtpMutation = useMutation({
         mutationFn: async () => {
-            const response = await fetch(`http://34.18.73.81:3000${apiPrefix}/resend-otp`, {
+            const response = await fetch(`https://alnubras.hopto.org:3000${apiPrefix}/resend-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contact }),
@@ -122,35 +124,48 @@ export default function TailorLogin() {
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
                 className={clsx(
-                    'max-w-md w-full space-y-8 bg-gray-800 rounded-xl shadow-lg border border-gray-700 transition-all duration-500',
+                    'max-w-md w-full space-y-8 bg-gray-800 rounded-xl shadow-lg border border-gray-700 transition-all duration-500 p-4 ',
                     { 'scale-95 opacity-80': sendOtpMutation.isPending || verifyOtpMutation.isPending }
                 )}
             >
-                {step === 'contact' && (
-                    <div className="grid grid-cols-2 p-4 gap-2">
-                        <button
-                            onClick={() => setUserType('admin')}
+                <div className="space-y-4">
 
-                            className={clsx(
-                                'w-full py-2 px-4 rounded-md text-white transition-all',
-                                userType === 'admin' ? 'bg-blue-600' : 'bg-gray-700 hover:bg-gray-600'
-                            )}
-                        >
-                            Login as Admin
-                        </button>
-                        <button
-                            onClick={() => setUserType('tailor')}
-                            className={clsx(
-                                'w-full py-2 px-4 rounded-md text-white transition-all',
-                                userType === 'tailor' ? 'bg-blue-600' : 'bg-gray-700 hover:bg-gray-600'
-                            )}
-                        >
-                            Login as Tailor
-                        </button>
-                    </div>
-                )}
+                    <h1 className='text-lg font-semibold text-zinc-50 text-center'>You are here as</h1>
+                    {step === 'contact' && (
+                        <div className="grid grid-cols-3 gap-2">
+                            <button
+                                onClick={() => setUserType('admin')}
 
-                <div className="space-y-8 p-8">
+                                className={clsx(
+                                    'w-full py-2 px-4 rounded-md text-white transition-all',
+                                    userType === 'admin' ? 'bg-blue-600 ring-2 ring-gray-400' : 'bg-gray-700 hover:bg-gray-600'
+                                )}
+                            >
+                                Admin
+                            </button>
+                            <button
+                                onClick={() => setUserType('salesperson')}
+                                className={clsx(
+                                    'w-full py-2 px-4 rounded-md text-white transition-all',
+                                    userType === 'salesperson' ? 'bg-blue-600  ring-2 ring-gray-400' : 'bg-gray-700 hover:bg-gray-600'
+                                )}
+                            >
+                                sales person
+                            </button>
+                            <button
+                                onClick={() => setUserType('tailor')}
+                                className={clsx(
+                                    'w-full py-2 px-4 rounded-md text-white transition-all',
+                                    userType === 'tailor' ? 'bg-blue-600  ring-2 ring-gray-400' : 'bg-gray-700 hover:bg-gray-600'
+                                )}
+                            >
+                                Tailor
+                            </button>
+                        </div>
+                    )}
+                </div>
+
+                <div className="space-y-8 p-4">
 
                     {step === 'otp' && (
                         <button

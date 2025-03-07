@@ -5,6 +5,7 @@ import * as XLSX from 'xlsx';
 interface Salesperson {
     id: string;
     name: string;
+    contact: string;
     totalOrders: number;
     totalSalesAmount: number;
     createdAt: string;
@@ -85,6 +86,7 @@ const SalespersonTable: React.FC<SalespersonTableProps> = ({ salespersons }) => 
                     <thead className="text-gray-400 border-b border-gray-700">
                         <tr>
                             <th className="pb-3 px-4">Name</th>
+                            <th className="pb-3 px-4">Contact</th>
                             <th className="pb-3 px-4">Total Orders</th>
                             <th className="pb-3 px-4">Total Sales</th>
                             <th className="pb-3 px-4">Created At</th>
@@ -96,6 +98,7 @@ const SalespersonTable: React.FC<SalespersonTableProps> = ({ salespersons }) => 
                         {filteredSalespersons.map((sp) => (
                             <tr key={sp.id} className="hover:bg-gray-700/50 transition-colors">
                                 <td className="py-2 px-4">{sp.name}</td>
+                                <td className="py-2 px-4">{sp.contact}</td>
                                 <td className="py-2 px-4">{sp.totalOrders}</td>
                                 <td className="py-2 px-4">AED {sp.totalSalesAmount.toFixed(2)}</td>
                                 <td className="py-2 px-4">

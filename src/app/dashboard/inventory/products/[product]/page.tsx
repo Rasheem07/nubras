@@ -12,7 +12,7 @@ export default function InventoryPage() {
     const { product } = useParams();
 
     const getProductMovement = async () => {
-        const response = await fetch(`http://34.18.73.81:3000/inventory/products/${product}`, {
+        const response = await fetch(`https://alnubras.hopto.org:3000/inventory/products/${product}`, {
             headers: {
                 "Content-Type": "application/json"
             },

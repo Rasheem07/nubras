@@ -67,7 +67,7 @@ const orderSchema = z.object({
   orderRegisteredBy: z.string().optional(),
   PendingAmount: z.number(),
   PaidAmount: z.number().default(0),
-  assignedTo: z.string().optional(),
+  assignedTo: z.string(),
   PaymentdueDate: z.date(),
   deliveryDate: z.date()
 });
@@ -131,6 +131,12 @@ interface Section {
 interface SalesPerson {
   id: string;
   name: string;
+  contact: string;
+}
+interface tailor {
+  id: string;
+  name: string;
+  contact: string;
 }
 
 interface Product {
@@ -179,7 +185,7 @@ const SearchSelect = <T extends Record<string, any>>({
         .includes(search.toLowerCase())
     );
 
-  
+
 
   return (
     <div className="relative">
@@ -243,7 +249,7 @@ const SearchSelect = <T extends Record<string, any>>({
                     key={String(item[valueKey])}
                     className="cursor-pointer hover:bg-gray-200"
                     onClick={() => {
-                      
+
                       if (label == "Product for fabric") {
                         console.log(item.id)
                         onChange(item.id)
@@ -372,7 +378,7 @@ const OrderCreationForm: React.FC = () => {
 
   const orderMutation = useMutation({
     mutationFn: async (data: CreateOrderFormData) => {
-      const response = await fetch("http://34.18.73.81:3000/orders/create", {
+      const response = await fetch("https://alnubras.hopto.org:3000/orders/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -394,7 +400,7 @@ const OrderCreationForm: React.FC = () => {
     queryKey: ["options"],
     queryFn: async () => {
       const response = await fetch(
-        "http://34.18.73.81:3000/orders/values/distinct",
+        "https://alnubras.hopto.org:3000/orders/values/distinct",
         {
           credentials: "include",
           headers: {
@@ -561,6 +567,7 @@ const OrderCreationForm: React.FC = () => {
                 columns={[
                   { key: "id", label: "id" },
                   { key: "name", label: "Salesperson Name" },
+                  { key: "contact", label: "Contact" },
                 ]}
                 valueKey="name"
                 placeholder="Search sales person..."
@@ -610,15 +617,23 @@ const OrderCreationForm: React.FC = () => {
                 />
               </div>
 
-              {/* {isCustomTailored && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-300">Assigned To</label>
-                  <input
-                    {...register('order.assignedTo')}
-                    className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white px-3 py-2 outline-none focus:border-blue-600 focus"
-                  />
-                </div>
-              )} */}
+              <SearchSelect<tailor>
+                isLoading={isLoading}
+                items={isLoading ? [] : options.tailors}
+                value={watch("order.assignedTo")}
+                onChange={(item) => {
+                  console.log(item.id)
+                  setValue("order.assignedTo", item.id);
+                }}
+                columns={[
+                  { key: "id", label: "id" },
+                  { key: "name", label: "tailor Name" },
+                  { key: "contact", label: "tailor contact" },
+                ]}
+                valueKey="id"
+                placeholder="Search tailor..."
+                label="Assigned tailor"
+              />
             </div>
 
             <div className="space-y-4 col-span-full">
@@ -738,28 +753,28 @@ const OrderCreationForm: React.FC = () => {
             {fabricFields.map((field, index) => (
               <div key={field.id} className="p-4 bg-gray-800 rounded-lg">
                 <SearchSelect<Product>
-                      isLoading={isLoading}
-                      columns={[
-                        { key: "id", label: "Product ID" },
-                        { key: "name", label: "Product Name" },
-                        { key: "sectionName", label: "Section" },
-                        { key: "price", label: "Price" },
-                      ]}
-                      setValue={setValue}
-                      valueKey="name"
-                      items={isLoading ? [] : options.products}
-                      value={watch("fabrics")![index].itemId}
-                      watch={watch}
-                      onChange={(item) => {
-                        console.log(item)
-                        setValue(
-                          `fabrics.${index}.itemId` as const,
-                          item
-                        );
-                      }}
-                      placeholder="Search product..."
-                      label="Product for fabric"
-                    />
+                  isLoading={isLoading}
+                  columns={[
+                    { key: "id", label: "Product ID" },
+                    { key: "name", label: "Product Name" },
+                    { key: "sectionName", label: "Section" },
+                    { key: "price", label: "Price" },
+                  ]}
+                  setValue={setValue}
+                  valueKey="name"
+                  items={isLoading ? [] : options.products}
+                  value={watch("fabrics")![index].itemId}
+                  watch={watch}
+                  onChange={(item) => {
+                    console.log(item)
+                    setValue(
+                      `fabrics.${index}.itemId` as const,
+                      item.id
+                    );
+                  }}
+                  placeholder="Search product..."
+                  label="Product for fabric"
+                />
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
 
 
@@ -842,28 +857,28 @@ const OrderCreationForm: React.FC = () => {
             {measurementFields.map((field, index) => (
               <div key={field.id} className="p-4 bg-gray-800 rounded-lg">
                 <SearchSelect<Product>
-                      isLoading={isLoading}
-                      columns={[
-                        { key: "id", label: "Product Id" },
-                        { key: "name", label: "Product Name" },
-                        { key: "sectionName", label: "Section" },
-                        { key: "price", label: "Price" },
-                      ]}
-                      setValue={setValue}
-                      valueKey="name"
-                      items={isLoading ? [] : options.products}
-                      value={watch("measurements")![index].productName}
-                      watch={watch}
-                      onChange={(item) => {
-                        setValue(
-                          `measurements.${index}.productName` as const,
-                          item.name
-                        );
-                      }}
-                      placeholder="Search product..."
-                      label="Product"
-                      formIndex={index} // Add this line to pass the current index
-                    />
+                  isLoading={isLoading}
+                  columns={[
+                    { key: "id", label: "Product Id" },
+                    { key: "name", label: "Product Name" },
+                    { key: "sectionName", label: "Section" },
+                    { key: "price", label: "Price" },
+                  ]}
+                  setValue={setValue}
+                  valueKey="name"
+                  items={isLoading ? [] : options.products}
+                  value={watch("measurements")![index].productName}
+                  watch={watch}
+                  onChange={(item) => {
+                    setValue(
+                      `measurements.${index}.productName` as const,
+                      item.name
+                    );
+                  }}
+                  placeholder="Search product..."
+                  label="Product"
+                  formIndex={index} // Add this line to pass the current index
+                />
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 my-4">
                   {[
                     { name: "LengthInFront", label: "Length in Front" },
@@ -937,14 +952,14 @@ const OrderCreationForm: React.FC = () => {
               <h3 className="text-lg font-medium text-gray-300 mb-2">
                 Total Amount
               </h3>
-              <p className="text-3xl font-bold text-white">${totalAmount}</p>
+              <p className="text-3xl font-bold text-white">AED {totalAmount}</p>
             </div>
 
             <div className="p-6 bg-gray-800 rounded-lg">
               <h3 className="text-lg font-medium text-gray-300 mb-2">
                 Paid Amount
               </h3>
-              <p className="text-3xl font-bold text-green-500">${paidAmount}</p>
+              <p className="text-3xl font-bold text-green-500">AED {paidAmount}</p>
             </div>
 
             <div className="p-6 bg-gray-800 rounded-lg">
@@ -952,7 +967,7 @@ const OrderCreationForm: React.FC = () => {
                 Pending Amount
               </h3>
               <p className="text-3xl font-bold text-yellow-500">
-                ${pendingAmount}
+                AED {pendingAmount}
               </p>
             </div>
           </div>

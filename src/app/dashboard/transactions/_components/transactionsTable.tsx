@@ -104,7 +104,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ transactions }) => 
                                         href={`/transactions/${transaction.id}`}
                                         className="text-blue-500 hover:text-blue-600 hover:underline underline-offset-2"
                                     >
-                                        View Details
+                                        Mark as completed
                                     </Link>
                                 </td>
                             </tr>
