@@ -14,7 +14,7 @@ export default function InventoryPage() {
     const [addModal, setAddModal] = useState(false);
 
     const getProductMovement = async () => {
-        const response = await fetch(`https://alnubras.hopto.org:3000/inventory/fabrics`, {
+        const response = await fetch(`http://alnubras.hopto.org:8888/inventory/fabrics`, {
             headers: {
                 "Content-Type": "application/json"
             },

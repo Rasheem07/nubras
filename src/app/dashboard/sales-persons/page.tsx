@@ -12,7 +12,7 @@ export default function SalesPersonsPage() {
     const queryClient = useQueryClient();
 
     const createSalesPerson = async (data: any) => {
-        const response = await fetch("https://alnubras.hopto.org:3000/salesperson/create", {
+        const response = await fetch("http://alnubras.hopto.org:8888/salesperson/create", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -37,7 +37,7 @@ export default function SalesPersonsPage() {
 
     const { data: salespersons, isLoading, error } = useQuery({
         queryKey: ['salespersons'],
-        queryFn: () => fetch('https://alnubras.hopto.org:3000/salesperson', { credentials: 'include' }).then(res => res.json())
+        queryFn: () => fetch('http://alnubras.hopto.org:8888/salesperson', { credentials: 'include' }).then(res => res.json())
     });
 
 

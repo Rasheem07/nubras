@@ -25,7 +25,7 @@ const MeasurementTable: React.FC = () => {
     // Fetch measurements data from the API
     const fetchMeasurements = async () => {
         try {
-            const response = await fetch('https://alnubras.hopto.org:3000/measurement');
+            const response = await fetch('http://alnubras.hopto.org:8888/measurement');
             const data = await response.json();
            
             return data;

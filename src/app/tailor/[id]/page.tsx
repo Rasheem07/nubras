@@ -8,7 +8,7 @@ export default function TailorOrder() {
     const { id } = useParams();
 
     const getOrderDetails = async () => {
-        const response = await fetch(`https://alnubras.hopto.org:3000/tailor/order/${id}`, {
+        const response = await fetch(`http://alnubras.hopto.org:8888/tailor/order/${id}`, {
             credentials: 'include'
         })
         return response.json()

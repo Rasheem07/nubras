@@ -13,7 +13,7 @@ import DataTable from '../dashboard/_components/DataTable.';
 import { useRouter } from 'next/navigation';
 
 const fetchOrders = async (): Promise<Order[]> => {
-    const response = await fetch('https://alnubras.hopto.org:3000/orders/salesman', {
+    const response = await fetch('http://alnubras.hopto.org:8888/orders/salesman', {
         credentials: 'include'
     });
     if (!response.ok) {
@@ -183,7 +183,7 @@ export default function OrdersPage() {
 
     const handleCancelOrder = async () => {
         if (!selectedOrder) return;
-        const response = await fetch(`https://alnubras.hopto.org:3000/orders/cancel/${selectedOrder.InvoiceId}`, {
+        const response = await fetch(`http://alnubras.hopto.org:8888/orders/cancel/${selectedOrder.InvoiceId}`, {
             method: 'DELETE',
             credentials: 'include'
         });
@@ -208,7 +208,7 @@ export default function OrdersPage() {
 
     const handleUpdateOrderStatus = async () => {
         const status = getNextStage(selectedOrder?.status || '').toLowerCase();
-        const response = await fetch(`https://alnubras.hopto.org:3000/orders/update/${selectedOrder?.InvoiceId}`, {
+        const response = await fetch(`http://alnubras.hopto.org:8888/orders/update/${selectedOrder?.InvoiceId}`, {
             method: 'PUT',
             credentials: 'include',
             headers: {
@@ -231,7 +231,7 @@ export default function OrdersPage() {
     });
 
     const handleDeleteOrder = async () => {
-        const response = await fetch(`https://alnubras.hopto.org:3000/orders/delete/${selectedOrder?.InvoiceId}`, {
+        const response = await fetch(`http://alnubras.hopto.org:8888/orders/delete/${selectedOrder?.InvoiceId}`, {
             method: 'DELETE',
             credentials: 'include'
         });
@@ -246,7 +246,7 @@ export default function OrdersPage() {
     // Using fetch
     async function downloadInvoicePdf(invoiceId: number) {
         try {
-            const response = await fetch(`https://alnubras.hopto.org:3000/invoices/pdf/${invoiceId}`);
+            const response = await fetch(`http://alnubras.hopto.org:8888/invoices/pdf/${invoiceId}`);
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
 
@@ -285,7 +285,7 @@ export default function OrdersPage() {
 
 
     const handlePrintInvoice = async (invoiceId: number) => {
-        const response = await fetch(`https://alnubras.hopto.org:3000/invoices/pdf/${invoiceId}`);
+        const response = await fetch(`http://alnubras.hopto.org:8888/invoices/pdf/${invoiceId}`);
         const blob = await response.blob();
         const fileURL = URL.createObjectURL(blob);
         const newWindow = window.open(fileURL, "_blank");
@@ -323,7 +323,7 @@ export default function OrdersPage() {
 
     const router = useRouter()
     const handleLogout = async () => {
-        await fetch('https://alnubras.hopto.org:3000/auth/logout', {
+        await fetch('http://alnubras.hopto.org:8888/auth/logout', {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"

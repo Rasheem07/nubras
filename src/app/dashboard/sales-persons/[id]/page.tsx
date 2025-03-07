@@ -42,7 +42,7 @@ export default function CustomerInvoicesPage() {
     });
 
     const getSalesPersonInvoices = async (id: string) => {
-        const response = await fetch(`https://alnubras.hopto.org:3000/orders/sales-person/${id}`);
+        const response = await fetch(`http://alnubras.hopto.org:8888/orders/sales-person/${id}`);
         return response.json();
     }
 

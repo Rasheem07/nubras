@@ -5,7 +5,7 @@ export function usePermission(role: string) {
 
     useEffect(() => {
         async function fetchPermissions() {
-            const res = await fetch("https://alnubras.hopto.org:3000/role", {
+            const res = await fetch("http://alnubras.hopto.org:8888/role", {
                 credentials: 'include'
             });
             const data = await res.json();

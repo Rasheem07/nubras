@@ -17,7 +17,7 @@ function Callback() {
         }
 
         const checkUserAndRedirect = async () => {
-                const response = await fetch(`https://alnubras.hopto.org:3000/role/user-type`, {
+                const response = await fetch(`http://alnubras.hopto.org:8888/role/user-type`, {
                     headers: {
                         'Content-Type': 'application/json'
                     },

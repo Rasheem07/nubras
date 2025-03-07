@@ -28,7 +28,7 @@ export default function CustomerInvoicesPage() {
     });
 
     const getCustomerInvoices = async (id: string) => {
-        const response = await fetch(`https://alnubras.hopto.org:3000/orders/customer/${id}`, {credentials: 'include'});
+        const response = await fetch(`http://alnubras.hopto.org:8888/orders/customer/${id}`, {credentials: 'include'});
         return response.json();
     }
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -186,7 +186,7 @@ export default function CustomerInvoicesPage() {
   
     const handleCancelOrder = async () => {
       if (!selectedOrder) return;
-      const response = await fetch(`https://alnubras.hopto.org:3000/orders/cancel/${selectedOrder.InvoiceId}`, {
+      const response = await fetch(`http://alnubras.hopto.org:8888/orders/cancel/${selectedOrder.InvoiceId}`, {
         method: 'DELETE',
         credentials: 'include'
       });
@@ -211,7 +211,7 @@ export default function CustomerInvoicesPage() {
   
     const handleUpdateOrderStatus = async () => {
       const status = getNextStage(selectedOrder?.status || '').toLowerCase();
-      const response = await fetch(`https://alnubras.hopto.org:3000/orders/update/${selectedOrder?.InvoiceId}`, {
+      const response = await fetch(`http://alnubras.hopto.org:8888/orders/update/${selectedOrder?.InvoiceId}`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
@@ -233,7 +233,7 @@ export default function CustomerInvoicesPage() {
     });
   
     const handleDeleteOrder = async () => {
-      const response = await fetch(`https://alnubras.hopto.org:3000/orders/delete/${selectedOrder?.InvoiceId}`, {
+      const response = await fetch(`http://alnubras.hopto.org:8888/orders/delete/${selectedOrder?.InvoiceId}`, {
         method: 'DELETE',
         credentials: 'include'
       });
@@ -248,7 +248,7 @@ export default function CustomerInvoicesPage() {
     // Using fetch
     async function downloadInvoicePdf(invoiceId: number) {
       try {
-        const response = await fetch(`https://alnubras.hopto.org:3000/invoices/pdf/${invoiceId}`);
+        const response = await fetch(`http://alnubras.hopto.org:8888/invoices/pdf/${invoiceId}`);
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
   
@@ -287,7 +287,7 @@ export default function CustomerInvoicesPage() {
   
   
     const handlePrintInvoice = async (invoiceId: number) => {
-      const response = await fetch(`https://alnubras.hopto.org:3000/invoices/pdf/${invoiceId}`);
+      const response = await fetch(`http://alnubras.hopto.org:8888/invoices/pdf/${invoiceId}`);
       const blob = await response.blob();
       const fileURL = URL.createObjectURL(blob);
       const newWindow = window.open(fileURL, "_blank");

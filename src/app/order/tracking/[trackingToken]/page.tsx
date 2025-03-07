@@ -14,7 +14,7 @@ export default function TrackingPage() {
   const { trackingToken } = useParams();
 
   const getOrder = async () => {
-    const response = await fetch(`https://alnubras.hopto.org:3000/order/${trackingToken}`, { credentials: 'include' })
+    const response = await fetch(`http://alnubras.hopto.org:8888/order/${trackingToken}`, { credentials: 'include' })
     return response.json()
   }
 

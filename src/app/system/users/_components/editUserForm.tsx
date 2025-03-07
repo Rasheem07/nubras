@@ -44,7 +44,7 @@ export default function EditUserForm({ user, onClose }: EditUserFormProps) {
 
     const { mutate: editUser, isPending } = useMutation({
         mutationFn: async (data: UserFormData) => {
-            const response = await fetch(`https://alnubras.hopto.org:3000/admin/users/${user.id}/edit`, {
+            const response = await fetch(`http://alnubras.hopto.org:8888/admin/users/${user.id}/edit`, {
                 method: "PATCH",
                 credentials: "include",
                 headers: { "Content-Type": "application/json" },

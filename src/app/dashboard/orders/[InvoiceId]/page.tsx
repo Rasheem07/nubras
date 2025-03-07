@@ -41,7 +41,7 @@ const OrderDetailsPage = () => {
 
 
     const getOrderById = async (InvoiceId: string) => {
-        const response = await fetch(`https://alnubras.hopto.org:3000/orders/${InvoiceId}`);
+        const response = await fetch(`http://alnubras.hopto.org:8888/orders/${InvoiceId}`);
         return response.json();
     }
 

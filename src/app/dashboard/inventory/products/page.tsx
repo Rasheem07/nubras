@@ -7,7 +7,7 @@ export default function InventoryPage() {
     const { product } = useParams();
 
     const getProductMovement = async () => {
-        const response = await fetch(`https://alnubras.hopto.org:3000/inventory/products`, {
+        const response = await fetch(`http://alnubras.hopto.org:8888/inventory/products`, {
             headers: {
                 "Content-Type": "application/json"
             },

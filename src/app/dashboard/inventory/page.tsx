@@ -15,7 +15,7 @@ interface Inventory {
 
 export default function InventoryPage() {
     const getInventory = async () => {
-        const response = await fetch('https://alnubras.hopto.org:3000/inventory', {
+        const response = await fetch('http://alnubras.hopto.org:8888/inventory', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
