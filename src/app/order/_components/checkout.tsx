@@ -9,7 +9,7 @@ import { CreditCard, Loader2 } from "lucide-react";
 export default function CheckoutButton() {
    
     const handlePayment = async () => {
-        const response = await fetch("http://alnubrasstudio.ddns.net/payment/checkout");
+        const response = await fetch("http://alnubrasstudio.ddns.net:8888/payment/checkout");
         const { url } = await response.json();
     
         if (url) {

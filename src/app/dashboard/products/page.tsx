@@ -10,13 +10,13 @@ export default function ProductsPage() {
     const queryClient = useQueryClient();
 
     const getSections = async () => {
-        const response = await fetch('http://alnubrasstudio.ddns.net/service/sections', { headers: { "Content-Type": "application/json" }, credentials: 'include' });
+        const response = await fetch('http://alnubrasstudio.ddns.net:8888/service/sections', { headers: { "Content-Type": "application/json" }, credentials: 'include' });
         const data = await response.json();
         return Array.isArray(data) ? data : [];
     }
 
     const createSection = async (data: { name: string }) => {
-        const response = await fetch('http://alnubrasstudio.ddns.net/service/add-section', {
+        const response = await fetch('http://alnubrasstudio.ddns.net:8888/service/add-section', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',

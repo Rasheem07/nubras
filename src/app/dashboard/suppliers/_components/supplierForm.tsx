@@ -27,7 +27,7 @@ const SupplierForm: React.FC<SupplierFormProps> = ({ setIsModalOpen }) => {
 
   const { mutate, isPending: isLoading } = useMutation({
     mutationFn: async (data: SupplierFormData) => {
-      const response = await fetch("http://alnubrasstudio.ddns.net/inventory/suppliers/add", {
+      const response = await fetch("http://alnubrasstudio.ddns.net:8888/inventory/suppliers/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

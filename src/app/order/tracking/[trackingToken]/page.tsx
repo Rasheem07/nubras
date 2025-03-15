@@ -14,7 +14,7 @@ export default function TrackingPage() {
   const { trackingToken } = useParams();
 
   const getOrder = async () => {
-    const response = await fetch(`http://alnubrasstudio.ddns.net/order/${trackingToken}`, { credentials: 'include' })
+    const response = await fetch(`http://alnubrasstudio.ddns.net:8888/order/${trackingToken}`, { credentials: 'include' })
     return response.json()
   }
 

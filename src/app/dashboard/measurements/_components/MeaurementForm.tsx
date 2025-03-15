@@ -27,7 +27,7 @@ const MeasurementForm = () => {
 
   const {mutate: createMeasurement} = useMutation({
     mutationFn: async (data: any) => {
-      const response = await fetch('http://alnubrasstudio.ddns.net/measurement/create', {
+      const response = await fetch('http://alnubrasstudio.ddns.net:8888/measurement/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

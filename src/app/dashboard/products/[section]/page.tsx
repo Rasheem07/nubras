@@ -31,7 +31,7 @@ export default function ServicesPage() {
   const {data: services, isLoading} = useQuery<Service[]>({
     queryKey: [section as string],
     queryFn: async () => {
-       const response = await fetch(`http://alnubrasstudio.ddns.net/service/${section}`, {
+       const response = await fetch(`http://alnubrasstudio.ddns.net:8888/service/${section}`, {
          headers: {
             "Content-Type": "application/json"
          },
@@ -66,7 +66,7 @@ export default function ServicesPage() {
 
   const {mutate: addNewService} = useMutation({
     mutationFn: async (data: ServiceFormData) => {
-        const response = await fetch('http://alnubrasstudio.ddns.net/service/add', {
+        const response = await fetch('http://alnubrasstudio.ddns.net:8888/service/add', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

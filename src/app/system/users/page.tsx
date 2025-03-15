@@ -21,7 +21,7 @@ export default function UsersPage() {
   const { data: users, isLoading } = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
-      const response = await fetch("http://alnubrasstudio.ddns.net/admin/users", { credentials: 'include' });
+      const response = await fetch("http://alnubrasstudio.ddns.net:8888/admin/users", { credentials: 'include' });
       return await response.json();
     },
     refetchInterval: 5 * 60 * 1000,
@@ -40,7 +40,7 @@ export default function UsersPage() {
 
   const { mutate: revokeUser, isPending } = useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(`http://alnubrasstudio.ddns.net/admin/revoke/${id}`, { credentials: 'include', method: 'POST' });
+      const response = await fetch(`http://alnubrasstudio.ddns.net:8888/admin/revoke/${id}`, { credentials: 'include', method: 'POST' });
       const json = await response.json()
 
       if (!response.ok) {
@@ -55,7 +55,7 @@ export default function UsersPage() {
 
   const { mutate: reactivateUser, isPending: isActivating } = useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(`http://alnubrasstudio.ddns.net/admin/reactivate/${id}`, { credentials: 'include', method: 'POST' });
+      const response = await fetch(`http://alnubrasstudio.ddns.net:8888/admin/reactivate/${id}`, { credentials: 'include', method: 'POST' });
       const json = await response.json()
 
       if (!response.ok) {

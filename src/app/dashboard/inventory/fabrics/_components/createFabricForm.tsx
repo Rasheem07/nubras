@@ -33,7 +33,7 @@ const FabricInventoryForm: React.FC<InventoryFormProps> = ({ setIsModalOpen }) =
 
   const { mutate, isPending: isLoading } = useMutation({
     mutationFn: async (data: FabricInventoryFormData) => {
-      const response = await fetch("http://alnubrasstudio.ddns.net/inventory/fabrics/add", {
+      const response = await fetch("http://alnubrasstudio.ddns.net:8888/inventory/fabrics/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

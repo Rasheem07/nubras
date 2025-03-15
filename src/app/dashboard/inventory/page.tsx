@@ -15,7 +15,7 @@ interface Inventory {
 
 export default function InventoryPage() {
     const getInventory = async () => {
-        const response = await fetch('http://alnubrasstudio.ddns.net/inventory', {
+        const response = await fetch('http://alnubrasstudio.ddns.net:8888/inventory', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
