@@ -378,7 +378,7 @@ const OrderCreationForm: React.FC = () => {
 
   const orderMutation = useMutation({
     mutationFn: async (data: CreateOrderFormData) => {
-      const response = await fetch("http://alnubras.hopto.org:8888/orders/create", {
+      const response = await fetch("http://alnubrasstudio.ddns.net/orders/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -400,7 +400,7 @@ const OrderCreationForm: React.FC = () => {
     queryKey: ["options"],
     queryFn: async () => {
       const response = await fetch(
-        "http://alnubras.hopto.org:8888/orders/values/distinct",
+        "http://alnubrasstudio.ddns.net/orders/values/distinct",
         {
           credentials: "include",
           headers: {

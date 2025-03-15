@@ -11,7 +11,7 @@ import DataTable from '../_components/DataTable.';
 import { toast } from 'sonner';
 
 const createEmployee = async (data: EmployeeFormData) => {
-  const response = await fetch('http://alnubras.hopto.org:8888/admin/add-employee', {
+  const response = await fetch('http://alnubrasstudio.ddns.net/admin/add-employee', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ export default function EmployeeForm() {
   const { data: tailors, isLoading } = useQuery({
     queryKey: ['tailors'],
     queryFn: async () => {
-      const response = await fetch('http://alnubras.hopto.org:8888/tailor', {
+      const response = await fetch('http://alnubrasstudio.ddns.net/tailor', {
         headers: {
           "Content-Type": "application/json"
         },

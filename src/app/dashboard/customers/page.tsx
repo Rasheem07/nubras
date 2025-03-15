@@ -21,7 +21,7 @@ interface Customer {
 }
 
 const fetchCustomers = async (): Promise<Customer[]> => {
-    const response = await fetch('http://alnubras.hopto.org:8888/customers', {
+    const response = await fetch('http://alnubrasstudio.ddns.net/customers', {
         credentials: 'include'
     });
     if (!response.ok) {
@@ -31,7 +31,7 @@ const fetchCustomers = async (): Promise<Customer[]> => {
 };
 
 const createCustomer = async (customerData: { name: string; phone: string; location: string }): Promise<Customer> => {
-    const response = await fetch('http://alnubras.hopto.org:8888/customers/create', {
+    const response = await fetch('http://alnubrasstudio.ddns.net/customers/create', {
         method: 'POST',
         credentials: 'include',
         headers: {

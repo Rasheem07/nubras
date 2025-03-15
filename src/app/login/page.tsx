@@ -36,7 +36,7 @@ export default function TailorLogin() {
 
     const sendOtpMutation = useMutation({
         mutationFn: async () => {
-            const response = await fetch(`http://alnubras.hopto.org:8888${apiPrefix}/login`, {
+            const response = await fetch(`http://alnubrasstudio.ddns.net${apiPrefix}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contact }),
@@ -62,7 +62,7 @@ export default function TailorLogin() {
 
     const verifyOtpMutation = useMutation({
         mutationFn: async () => {
-            const response = await fetch(`http://alnubras.hopto.org:8888${apiPrefix}/verify-otp`, {
+            const response = await fetch(`http://alnubrasstudio.ddns.net${apiPrefix}/verify-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -96,7 +96,7 @@ export default function TailorLogin() {
 
     const resendOtpMutation = useMutation({
         mutationFn: async () => {
-            const response = await fetch(`http://alnubras.hopto.org:8888${apiPrefix}/resend-otp`, {
+            const response = await fetch(`http://alnubrasstudio.ddns.net${apiPrefix}/resend-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contact }),

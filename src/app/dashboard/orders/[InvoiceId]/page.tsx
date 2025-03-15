@@ -41,7 +41,7 @@ const OrderDetailsPage = () => {
 
 
     const getOrderById = async (InvoiceId: string) => {
-        const response = await fetch(`http://alnubras.hopto.org:8888/orders/${InvoiceId}`);
+        const response = await fetch(`http://alnubrasstudio.ddns.net/orders/${InvoiceId}`);
         return response.json();
     }
 

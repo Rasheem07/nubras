@@ -27,7 +27,7 @@ export default function ConfigurationPage() {
 
   const fetchConfigs = async () => {
     try {
-      const response = await fetch('http://alnubras.hopto.org:8888/config', {credentials: 'include'});
+      const response = await fetch('http://alnubrasstudio.ddns.net/config', {credentials: 'include'});
       const data: ConfigValue[] = await response.json();
       
       const configMap = data.reduce((acc, config) => ({
@@ -57,7 +57,7 @@ export default function ConfigurationPage() {
     setSaving(true);
     try {
       const promises = Object.entries(configs).map(([key, value]) => 
-        fetch('http://alnubras.hopto.org:8888/config', {
+        fetch('http://alnubrasstudio.ddns.net/config', {
           method: 'POST',
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
@@ -184,7 +184,7 @@ export default function ConfigurationPage() {
                 title="Security Settings"
                 fields={[
                     { key: 'JWT_SECRET', label: 'JWT Secret Key', type: 'password', placeholder: 'Enter JWT secret' },
-                    { key: 'CORS_ORIGINS', label: 'CORS Allowed Origins', type: 'text', placeholder: 'https://example.com, http://alnubras.hopto.org:8888' },
+                    { key: 'CORS_ORIGINS', label: 'CORS Allowed Origins', type: 'text', placeholder: 'https://example.com, http://alnubrasstudio.ddns.net' },
                     { key: 'SESSION_TIMEOUT', label: 'Session Timeout (minutes)', type: 'text', placeholder: '60' }
                 ]}
             />

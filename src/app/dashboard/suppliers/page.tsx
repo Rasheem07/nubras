@@ -13,7 +13,7 @@ export default function SupplierPage() {
     const { data: suppliers, isLoading } = useQuery({
         queryKey: ['suppliers'],
         queryFn: async () => {
-            const response = await fetch('http://alnubras.hopto.org:8888/inventory/suppliers', {
+            const response = await fetch('http://alnubrasstudio.ddns.net/inventory/suppliers', {
                 credentials: 'include'
             })
             const json = await response.json()
@@ -24,7 +24,7 @@ export default function SupplierPage() {
 
     const queryClient = useQueryClient()
     const createSupplier = async (data: any) => {
-        const response = await fetch("http://alnubras.hopto.org:8888/inventory/suppliers/add", {
+        const response = await fetch("http://alnubrasstudio.ddns.net/inventory/suppliers/add", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
