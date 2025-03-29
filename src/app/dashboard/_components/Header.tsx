@@ -37,7 +37,7 @@ export default function Header() {
     }
 
     const handleLogout = async () => {
-        await fetch('http://alnubrasstudio.ddns.net:8888/auth/logout', {
+        await fetch('https://api.alnubrasstudio.com/auth/logout', {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"
