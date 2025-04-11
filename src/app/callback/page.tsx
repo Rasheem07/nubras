@@ -17,7 +17,7 @@ function Callback() {
         }
 
         const checkUserAndRedirect = async () => {
-                const response = await fetch(`https://api.alnubrasstudio.com/role/user-type`, {
+                const response = await fetch(`http://alnubras.dyndns.org:3000/role/user-type`, {
                     headers: {
                         'Content-Type': 'application/json'
                     },

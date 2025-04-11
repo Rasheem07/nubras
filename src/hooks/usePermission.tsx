@@ -5,7 +5,7 @@ export function usePermission(role: string) {
 
     useEffect(() => {
         async function fetchPermissions() {
-            const res = await fetch("https://api.alnubrasstudio.com/role", {
+            const res = await fetch("http://alnubras.dyndns.org:3000/role", {
                 credentials: 'include'
             });
             const data = await res.json();

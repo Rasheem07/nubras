@@ -14,7 +14,7 @@ pnpm dev
 bun dev
 ```
 
-Open [https://api.alnubrasstudio.com](https://api.alnubrasstudio.com) with your browser to see the result.
+Open [http://alnubras.dyndns.org:3000](http://alnubras.dyndns.org:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

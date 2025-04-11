@@ -12,7 +12,7 @@ export default function SalesPersonsPage() {
     const queryClient = useQueryClient();
 
     const createSalesPerson = async (data: any) => {
-        const response = await fetch("https://api.alnubrasstudio.com/salesperson/create", {
+        const response = await fetch("http://alnubras.dyndns.org:3000/salesperson/create", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -37,7 +37,7 @@ export default function SalesPersonsPage() {
 
     const { data: salespersons, isLoading, error } = useQuery({
         queryKey: ['salespersons'],
-        queryFn: () => fetch('https://api.alnubrasstudio.com/salesperson', { credentials: 'include' }).then(res => res.json())
+        queryFn: () => fetch('http://alnubras.dyndns.org:3000/salesperson', { credentials: 'include' }).then(res => res.json())
     });
 
 

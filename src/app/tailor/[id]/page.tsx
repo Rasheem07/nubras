@@ -8,7 +8,7 @@ export default function TailorOrder() {
     const { id } = useParams();
 
     const getOrderDetails = async () => {
-        const response = await fetch(`https://api.alnubrasstudio.com/tailor/order/${id}`, {
+        const response = await fetch(`http://alnubras.dyndns.org:3000/tailor/order/${id}`, {
             credentials: 'include'
         })
         return response.json()

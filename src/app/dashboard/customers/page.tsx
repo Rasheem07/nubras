@@ -21,7 +21,7 @@ interface Customer {
 }
 
 const fetchCustomers = async (): Promise<Customer[]> => {
-    const response = await fetch('https://api.alnubrasstudio.com/customers', {
+    const response = await fetch('http://alnubras.dyndns.org:3000/customers', {
         credentials: 'include'
     });
     if (!response.ok) {
@@ -31,7 +31,7 @@ const fetchCustomers = async (): Promise<Customer[]> => {
 };
 
 const createCustomer = async (customerData: { name: string; phone: string; location: string }): Promise<Customer> => {
-    const response = await fetch('https://api.alnubrasstudio.com/customers/create', {
+    const response = await fetch('http://alnubras.dyndns.org:3000/customers/create', {
         method: 'POST',
         credentials: 'include',
         headers: {

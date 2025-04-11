@@ -42,7 +42,7 @@ export default function CustomerInvoicesPage() {
     });
 
     const getSalesPersonInvoices = async (id: string) => {
-        const response = await fetch(`https://api.alnubrasstudio.com/orders/sales-person/${id}`);
+        const response = await fetch(`http://alnubras.dyndns.org:3000/orders/sales-person/${id}`);
         return response.json();
     }
 

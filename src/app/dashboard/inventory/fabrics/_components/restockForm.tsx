@@ -33,7 +33,7 @@ const FabricRestockForm: React.FC<RestockFormProps> = ({ setIsRestockModalOpen }
 
   const { mutate, isPending: isLoading } = useMutation({
     mutationFn: async (data: FabricRestockFormData) => {
-      const response = await fetch(`https://api.alnubrasstudio.com/inventory/restock/fabric`, {
+      const response = await fetch(`http://alnubras.dyndns.org:3000/inventory/restock/fabric`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

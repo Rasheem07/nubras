@@ -91,7 +91,7 @@ const LoadingScreen = () => {
 };
 // Fetch dashboard data
 const fetchDashboardData = async () => {
-  const response = await fetch('https://api.alnubrasstudio.com/dashboard/overview');
+  const response = await fetch('http://alnubras.dyndns.org:3000/dashboard/overview');
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }

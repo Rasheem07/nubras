@@ -378,7 +378,7 @@ const OrderCreationForm: React.FC = () => {
 
     const orderMutation = useMutation({
         mutationFn: async (data: CreateOrderFormData) => {
-            const response = await fetch("https://api.alnubrasstudio.com/orders/salesman/create", {
+            const response = await fetch("http://alnubras.dyndns.org:3000/orders/salesman/create", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -400,7 +400,7 @@ const OrderCreationForm: React.FC = () => {
         queryKey: ["options"],
         queryFn: async () => {
             const response = await fetch(
-                "https://api.alnubrasstudio.com/orders/values/distinct",
+                "http://alnubras.dyndns.org:3000/orders/values/distinct",
                 {
                     credentials: "include",
                     headers: {

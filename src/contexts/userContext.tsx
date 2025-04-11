@@ -14,7 +14,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         const fetchUserType = async () => {
-            const response = await fetch(`https://api.alnubrasstudio.com/role/user-type`, {
+            const response = await fetch(`http://alnubras.dyndns.org:3000/role/user-type`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'

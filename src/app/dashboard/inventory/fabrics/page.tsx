@@ -14,7 +14,7 @@ export default function InventoryPage() {
     const [addModal, setAddModal] = useState(false);
 
     const getProductMovement = async () => {
-        const response = await fetch(`https://api.alnubrasstudio.com/inventory/fabrics`, {
+        const response = await fetch(`http://alnubras.dyndns.org:3000/inventory/fabrics`, {
             headers: {
                 "Content-Type": "application/json"
             },

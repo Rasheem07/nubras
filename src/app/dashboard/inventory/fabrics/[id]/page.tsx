@@ -12,7 +12,7 @@ export default function InventoryPage() {
     const { id } = useParams();
 
     const getProductMovement = async () => {
-        const response = await fetch(`https://api.alnubrasstudio.com/inventory/fabrics/${id}`, {
+        const response = await fetch(`http://alnubras.dyndns.org:3000/inventory/fabrics/${id}`, {
             headers: {
                 "Content-Type": "application/json"
             },

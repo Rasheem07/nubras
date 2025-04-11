@@ -41,7 +41,7 @@ const OrderDetailsPage = () => {
 
 
     const getOrderById = async (InvoiceId: string) => {
-        const response = await fetch(`https://api.alnubrasstudio.com/orders/${InvoiceId}`);
+        const response = await fetch(`http://alnubras.dyndns.org:3000/orders/${InvoiceId}`);
         return response.json();
     }
 
